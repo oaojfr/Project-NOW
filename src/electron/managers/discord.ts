@@ -10,7 +10,7 @@ export type RpcClient = {
     }) => void;
 };
 
-export const clientId = "1270181852979789825";
+export const clientId = "1445408764399194283";
 let rpcClient: DiscordRPCClient | undefined;
 let startTimestamp: Date;
 
