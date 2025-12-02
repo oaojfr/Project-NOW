@@ -5,10 +5,10 @@ import {
     FaCloudDownloadAlt,
 } from "react-icons/fa";
 
-const githubUrl = "https://github.com/AstralVixen/GeForce-Infinity";
-const websiteUrl = "https://geforce-infinity.xyz";
+const githubUrl = "https://github.com/oaojfr/Project-NOW";
+const websiteUrl = "https://project-now.xyz";
 const patreonUrl = "https://www.patreon.com/AstralVixen";
-const updatesUrl = "https://github.com/AstralVixen/GeForce-Infinity/releases";
+const updatesUrl = "https://github.com/oaojfr/Project-NOW/releases";
 
 declare const __APP_VERSION__: string;
 

@@ -44,7 +44,7 @@ Project NOW is an independent project and is not affiliated with, sponsored by, 
 
 ## 📦 **Installation**
 
-Visit our [Release](https://github.com/AstralVixen/GeForce-Infinity/releases) page, where you can find newest builds of Project NOW in packages like: **zip** (binary version), **deb**, **AppImage**, **rpm** and **exe**.
+Visit our [Release](https://github.com/oaojfr/Project-NOW/releases) page, where you can find newest builds of Project NOW in packages like: **zip** (binary version), **deb**, **AppImage**, **rpm** and **exe**.
 
 ## 🎮 **Usage**
 
@@ -62,13 +62,13 @@ To get started with Project NOW, follow these steps:
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/AstralVixen/GeForce-Infinity.git
+    git clone https://github.com/oaojfr/Project-NOW.git
     ```
 
 2. Navigate to the project directory:
 
     ```bash
-    cd GeForce-Infinity
+    cd Project-NOW
     ```
 
 3. Install dependencies:
@@ -94,6 +94,6 @@ Project NOW is licensed under the [MIT License](LICENSE). See the [LICENSE](LICE
 
 For questions, feedback, or suggestions, feel free to reach out to me:
 
-- [GitHub Issues](https://github.com/AstralVixen/GeForce-Infinity/issues)
+- [GitHub Issues](https://github.com/oaojfr/Project-NOW/issues)
 - Email: [astral.vixen.hu@gmail.com](mailto:astral.vixen.hu@gmail.com)
 - Discord: [Join my discord](https://discord.gg/p5vRgQwZ9K)

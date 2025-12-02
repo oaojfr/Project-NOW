@@ -9,18 +9,18 @@ First off, thank you for taking the time to contribute! This document outlines h
 If this is your first time contributing:
 
 1. **Fork** the repository to your own GitHub account:  
-   https://github.com/AstralVixen/GeForce-Infinity/fork
+   https://github.com/oaojfr/Project-NOW/fork
 
 2. **Clone** your fork:
 
     ```bash
-    git clone https://github.com/YOUR_USERNAME/GeForce-Infinity.git
-    cd GeForce-Infinity
+    git clone https://github.com/YOUR_USERNAME/Project-NOW.git
+    cd Project-NOW
     ```
 
 3. Set the **original repository** as an upstream remote:
     ```bash
-    git remote add upstream https://github.com/AstralVixen/GeForce-Infinity.git
+    git remote add upstream https://github.com/oaojfr/Project-NOW.git
     ```
 
 ## 🌿 Branching & Workflow
@@ -87,6 +87,6 @@ If using VScode / VSCodium or any other fork, open Command Palette by `Ctrl+Shif
 
 If you’re unsure or want feedback before writing code:
 
-- Write to us on Discord (linked in [README](https://github.com/AstralVixen/GeForce-Infinity#readme)) or start a [discussion](https://github.com/AstralVixen/GeForce-Infinity/discussions)
+- Write to us on Discord (linked in [README](https://github.com/oaojfr/Project-NOW#readme)) or start a [discussion](https://github.com/oaojfr/Project-NOW/discussions)
 
 ## We’re glad to have you here — happy coding! 💻
