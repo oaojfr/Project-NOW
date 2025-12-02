@@ -1,13 +1,13 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=GeForce Infinity
+Name=Project NOW
 Comment=Enhance your GeForce NOW application experience!
 Terminal=false
 Type=Application
-Exec=/opt/geforce-infinity/geforce-infinity
-Icon=net.astralvixen.geforceinfinity
-StartupWMClass=geforce infinity
+Exec=/opt/project-now/project-now
+Icon=net.astralvixen.projectnow
+StartupWMClass=project now
 Categories=Network;Game;
 StartupNotify=false
-Keywords=Game;Streaming;Nvidia;GeForce;NOW;GFN;Infinity;
-MimeType=x-scheme-handler/geforceinfinity;
+Keywords=Game;Streaming;Nvidia;GeForce;NOW;GFN;Project;
+MimeType=x-scheme-handler/projectnow;

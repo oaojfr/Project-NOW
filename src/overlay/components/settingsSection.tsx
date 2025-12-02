@@ -22,7 +22,7 @@ const colorOptions = [
 ];
 
 const userAgentOptions = [
-    { label: "GeForce Infinity", value: "" },
+    { label: "Project NOW", value: "" },
     {
         label: "Chrome",
         value: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
@@ -37,13 +37,23 @@ const userAgentOptions = [
 const resolutionOptions = [
     { label: "1366 x 768", value: "1366x768" },
     { label: "1920 x 1080", value: "1920x1080" },
-    { label: "2560 x 1440", value: "2560x1440" },
+    { label: "2560 x 1440 (16:9) - QHD", value: "2560x1440" },
+    { label: "3440 x 1440 (21:9) - UW QHD", value: "3440x1440" },
+    { label: "3456 x 2160 (16:10) - 3.5K", value: "3456x2160" },
+    { label: "3840 x 1080 (32:9) - UW FHD", value: "3840x1080" },
+    { label: "3840 x 1600 (24:10) - UW QHD", value: "3840x1600" },
+    { label: "3840 x 2160 (16:9) - 4K", value: "3840x2160" },
+    { label: "5120 x 1440 (32:9) - SUW QHD", value: "5120x1440" },
+    { label: "5120 x 2160 (21:9) - UW 5K", value: "5120x2160" },
+    { label: "5120 x 2880 (16:9) - 5K", value: "5120x2880" },
 ];
 
 const fpsOptions = [
     { label: "30 FPS", value: 30 },
     { label: "60 FPS", value: 60 },
-    { label: "120 FPS - Ultimate Only", value: 120 }
+    { label: "120 FPS - Ultimate Only", value: 120 },
+    { label: "240 FPS - Ultimate Only", value: 240 },
+    { label: "360 FPS - Ultimate Only", value: 360 }
 ];
 
 export const SettingsSection: React.FC<SettingsSectionProps> = ({

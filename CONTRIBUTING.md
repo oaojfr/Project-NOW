@@ -1,6 +1,6 @@
-# Contributing to GeForce Infinity
+# Contributing to Project NOW
 
-First off, thank you for taking the time to contribute! This document outlines how to get started with contributing to **GeForce Infinity**, along with the standards and approval process required.
+First off, thank you for taking the time to contribute! This document outlines how to get started with contributing to **Project NOW**, along with the standards and approval process required.
 
 ---
 

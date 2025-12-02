@@ -13,7 +13,7 @@ export function createMainWindow(): BrowserWindow {
     const mainWindow = new BrowserWindow({
         width: 1400,
         height: 1000,
-        title: "GeForce Infinity",
+        title: "Project NOW",
         icon: iconPath || undefined,
         webPreferences: {
             preload: preloadPath,

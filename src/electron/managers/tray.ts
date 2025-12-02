@@ -22,7 +22,7 @@ export function createTray(mainWindow: BrowserWindow): Tray {
     }
 
     const tray = new Tray(trayIcon ?? nativeImage.createEmpty()); // fallback
-    tray.setToolTip("GeForce Infinity");
+    tray.setToolTip("Project NOW");
 
     const contextMenu = Menu.buildFromTemplate([
         { label: "Open", click: () => mainWindow.show() },

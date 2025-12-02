@@ -1,10 +1,8 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import Sidebar from "./components/sidebar";
 import type { Config } from "../shared/types";
 import { defaultConfig } from "../shared/types";
-import { User } from "firebase/auth";
-import { UserProvider } from "./contexts/UserContext";
 
 const css = window.electronAPI.getTailwindCss();
 
@@ -13,7 +11,7 @@ style.textContent = css;
 document.head.appendChild(style);
 
 const mount = document.createElement("div");
-mount.id = "geforce-infinity-sidebar-root";
+mount.id = "project-now-sidebar-root";
 document.body.appendChild(mount);
 
 const App = () => {
@@ -29,6 +27,12 @@ const App = () => {
             setConfig(config);
         });
 
+        // Listen for global shortcut from main process (works during streaming)
+        window.electronAPI.onSidebarToggle(() => {
+            setVisible((v) => !v);
+        });
+
+        // Also listen for keyboard events (works when page has focus)
         const handler = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.key === "i") {
                 e.preventDefault();
@@ -45,9 +49,7 @@ const App = () => {
     }, [config]);
 
     return (
-        <UserProvider>
-            <Sidebar config={config} setConfig={setConfig} visible={visible} />
-        </UserProvider>
+        <Sidebar config={config} setConfig={setConfig} visible={visible} />
     );
 };
 

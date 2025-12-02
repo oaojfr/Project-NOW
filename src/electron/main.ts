@@ -141,16 +141,21 @@ async function registerAppProtocols() {
 }
 
 function registerShortcuts(mainWindow: BrowserWindow) {
-    /*const success = globalShortcut.register("Control+I", () => {
+    // Global shortcut works even during streaming when the video has focus
+    const success = globalShortcut.register("Control+I", () => {
         mainWindow.webContents.send("sidebar-toggle");
     });
 
-    console.log("[Shortcuts] Sidebar shortcut registered?", success);*/
+    if (!success) {
+        console.error("[Shortcuts] Failed to register Ctrl+I shortcut");
+    } else {
+        console.log("[Shortcuts] Ctrl+I shortcut registered successfully");
+    }
 
     if (!getConfig().informed) {
         mainWindow.once("ready-to-show", () => {
             new Notification({
-                title: "GeForce Infinity",
+                title: "Project NOW",
                 body: "Press Ctrl+I to open the sidebar!",
                 icon: path.join(
                     __dirname,
@@ -167,10 +172,22 @@ function registerShortcuts(mainWindow: BrowserWindow) {
 }
 
 function setupWindowEvents(mainWindow: BrowserWindow) {
+    // Inject fetch interceptor as early as possible on every navigation
+    mainWindow.webContents.on("dom-ready", () => {
+        patchFetchForSessionRequest(mainWindow);
+    });
+
     mainWindow.webContents.on("did-finish-load", () => {
         const config = getConfig();
         replaceColorInCSS(mainWindow, config.accentColor);
         mainWindow.webContents.send("config-loaded", config);
+        // Re-inject fetch interceptor to be safe (idempotent due to __gfiPatchApplied flag)
+        patchFetchForSessionRequest(mainWindow);
+    });
+
+    // Also inject on did-navigate-in-page for SPA-style navigation
+    mainWindow.webContents.on("did-navigate-in-page", () => {
+        patchFetchForSessionRequest(mainWindow);
     });
 
     mainWindow.on("blur", () => {
@@ -192,7 +209,7 @@ function setupWindowEvents(mainWindow: BrowserWindow) {
             const config = getConfig();
             if (config.inactivityNotification === true) {
                 new Notification({
-                    title: "GeForce Infinity",
+                    title: "Project NOW",
                     body: "Your game is about to end in 60 seconds!",
                     icon: path.join(
                         __dirname,
@@ -211,12 +228,12 @@ function setupWindowEvents(mainWindow: BrowserWindow) {
             .replace(/^GeForce NOW - /, "")
             .replace(/ on GeForce NOW$/, "");
         if (
-            title === "GeForce Infinity | GeForce NOW" ||
+            title === "Project NOW | GeForce NOW" ||
             title === "GeForce NOW"
         ) {
-            mainWindow.setTitle("GeForce Infinity");
+            mainWindow.setTitle("Project NOW");
         } else {
-            const modifiedTitle = `GeForce Infinity${
+            const modifiedTitle = `Project NOW${
                 gameName ? " | " + gameName : ""
             }`;
             mainWindow.setTitle(modifiedTitle);
@@ -244,7 +261,7 @@ function setupWindowEvents(mainWindow: BrowserWindow) {
                         mainWindow.maximize();
                     } else if (config.notify) {
                         new Notification({
-                            title: "GeForce Infinity",
+                            title: "Project NOW",
                             body: "Your gaming rig is ready!",
                             icon: path.join(
                                 __dirname,
@@ -323,7 +340,7 @@ function setupWindowEvents(mainWindow: BrowserWindow) {
     });
 }
 
-app.setName("GeForce Infinity");
+app.setName("Project NOW");
 app.commandLine.appendSwitch("enable-media-stream");
 app.commandLine.appendSwitch("ignore-gpu-blocklist");
 app.commandLine.appendSwitch("enable-accelerated-video");
@@ -351,6 +368,12 @@ registerCustomProtocols();
 
 async function patchFetchForSessionRequest(mainWindow: Electron.CrossProcessExports.BrowserWindow) {
     await mainWindow.webContents.executeJavaScript(`(() => {
+      // Check if already patched by verifying our custom property
+      if (window.fetch.__gfiPatched) {
+        console.log("[Project NOW] Fetch interceptor already installed, skipping");
+        return;
+      }
+      
       const originalFetch = window.fetch.bind(window);
     
       function isTarget(urlString) {
@@ -386,7 +409,11 @@ async function patchFetchForSessionRequest(mainWindow: Electron.CrossProcessExpo
         const srd = parsed && parsed.sessionRequestData;
         if (!srd || srd.clientRequestMonitorSettings == null) return undefined;
         
-        const clientSettings = await electronAPI.getCurrentConfig();
+        const clientSettings = await window.electronAPI.getCurrentConfig();
+        
+        console.log("[Project NOW] Intercepting session request - Applying resolution:", 
+          clientSettings.monitorWidth + "x" + clientSettings.monitorHeight, 
+          "@ " + clientSettings.framesPerSecond + " FPS");
         
         srd.clientRequestMonitorSettings = [
           { 
@@ -412,9 +439,12 @@ async function patchFetchForSessionRequest(mainWindow: Electron.CrossProcessExpo
           return originalFetch(input, init);
         }
     
+        console.log("[Project NOW] Detected session request to:", url);
+        
         if (init && init.body != null) {
           const patched = await tryPatchBody(init.body);
           if (patched !== undefined) {
+            console.log("[Project NOW] Session request patched successfully");
             const newInit = {
               ...init,
               body: patched
@@ -426,7 +456,10 @@ async function patchFetchForSessionRequest(mainWindow: Electron.CrossProcessExpo
         return originalFetch(input, init);
       }, originalFetch);
     
+      // Mark the wrapped fetch as patched
+      wrappedFetch.__gfiPatched = true;
       window.fetch = wrappedFetch;
+      console.log("[Project NOW] Fetch interceptor installed");
     })();`);
 }
 
@@ -450,8 +483,8 @@ app.whenReady().then(async () => {
 
     setInterval(() => {
         const title = mainWindow.getTitle();
-        const gameTitle = title.startsWith("GeForce Infinity | ")
-            ? title.replace("GeForce Infinity | ", "")
+        const gameTitle = title.startsWith("Project NOW | ")
+            ? title.replace("Project NOW | ", "")
             : "";
         updateActivity(gameTitle || null);
     }, 15_000);

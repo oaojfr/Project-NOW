@@ -1,5 +1,3 @@
-import { User } from "firebase/auth";
-
 export const defaultConfig: Config = {
     userAgent: "",
     autofocus: false,
@@ -26,11 +24,4 @@ export interface Config {
     monitorWidth: number;
     monitorHeight: number;
     framesPerSecond: number;
-}
-
-export interface UserContext {
-    user: User | null;
-    setUser: React.Dispatch<React.SetStateAction<User | null>>;
-    loading: boolean;
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }

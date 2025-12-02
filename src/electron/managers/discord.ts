@@ -39,7 +39,7 @@ export function updateActivity(gameTitle: string | null) {
         rpcClient.setActivity({
             state: gameTitle ? `Playing ${gameTitle}` : "Idling...",
             largeImageKey: "infinity_logo",
-            largeImageText: "GeForce Infinity",
+            largeImageText: "Project NOW",
             startTimestamp,
         });
     } catch (err) {
