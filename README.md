@@ -2,6 +2,10 @@
 
 **Project NOW** is next-gen application designed to enhance the GeForce NOW experience. Originally created to address the lack of native GeForce NOW support on Linux, this app also provides functionality for macOS and Windows users. Our goal is to refine the user interface and offer custom features for an improved experience.
 
+## 🙏 **Credits**
+
+This project was originally created by **[AstralVixen](https://github.com/AstralVixen)** and **[T0msk](https://github.com/t0msk)**. A huge thanks to them for their foundational work on this project!
+
 ## **Screenshots**
 
 ![Screenshot](src/assets/resources/Screenshot1.png)

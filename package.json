@@ -18,9 +18,19 @@
     },
     "keywords": [],
     "author": {
-        "name": "AstralVixen",
-        "email": "astral.vixen.hu@gmail.com"
+        "name": "oaojfr"
     },
+    "contributors": [
+        {
+            "name": "AstralVixen",
+            "email": "astral.vixen.hu@gmail.com",
+            "url": "https://github.com/AstralVixen"
+        },
+        {
+            "name": "T0msk",
+            "url": "https://github.com/t0msk"
+        }
+    ],
     "license": "MIT",
     "description": "Enhance your GeForce NOW application experience!",
     "devDependencies": {
