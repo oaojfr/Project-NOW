@@ -1,4 +1,12 @@
-export const Header = () => {
+import { getTranslation, type Language } from "../i18n";
+
+type HeaderProps = {
+    language: Language;
+};
+
+export const Header: React.FC<HeaderProps> = ({ language }) => {
+    const t = getTranslation(language);
+    
     return (
         <header className="w-full bg-[#0c1015] text-gray-300 p-8 font-sans">
             <div className="flex items-center justify-between mb-2">
@@ -12,7 +20,7 @@ export const Header = () => {
                 </div>
             </div>
 
-            <p>Status: Connected to GFN 🎮</p>
+            <p>{t.statusConnected}</p>
         </header>
     );
 };

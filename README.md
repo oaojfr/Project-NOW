@@ -50,10 +50,11 @@ Visit our [Release](https://github.com/oaojfr/Project-NOW/releases) page, where 
 
 Press `Ctrl+I` to open sidebar to access Project NOW features.
 
-## 💻 **How to use 1440p & 120 FPS streaming**
+## 💻 **How to use 2K, 4K & 120 FPS streaming**
 
 Press `Ctrl+I` to open sidebar and change **Resolution** and **FPS** to your liking.
 **DO NOT USE** native GeForce NOW settings for resolution and FPS, Project NOW **doesn't** alter GeForce NOW settings, so you still see 1080p max resolution and 60 FPS. Project NOW override these values.
+
 
 ## 🛠️ **Build**
 

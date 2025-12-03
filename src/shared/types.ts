@@ -9,7 +9,8 @@ export const defaultConfig: Config = {
     inactivityNotification: false,
     monitorWidth: 1920,
     monitorHeight: 1080,
-    framesPerSecond: 60
+    framesPerSecond: 60,
+    language: "en"
 };
 
 export interface Config {
@@ -24,4 +25,5 @@ export interface Config {
     monitorWidth: number;
     monitorHeight: number;
     framesPerSecond: number;
+    language: string;
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import type { Config } from "../../shared/types";
+import type { Language } from "../i18n";
 
 import { Header } from "./header";
 import { Footer } from "./footer";
@@ -13,6 +14,8 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, visible }) => {
+    const currentLang = (config.language || "en") as Language;
+    
     return (
         <div
             className={`fixed top-0 right-0 bottom-0 w-[450px] bg-[#23272b] text-[#babec4] z-[99999] font-sans
@@ -21,13 +24,13 @@ const Sidebar: React.FC<SidebarProps> = ({ config, setConfig, visible }) => {
       `}
             style={{ pointerEvents: visible ? "auto" : "none" }}
         >
-            <Header />
+            <Header language={currentLang} />
             <div className="flex-1 overflow-y-auto px-8 py-4 min-h-0 scrollbar">
                 <SettingsSection config={config} setConfig={setConfig} />
                 <hr className="mx-8 my-4 border-gray-700" />
-                <ShortcutSection />
+                <ShortcutSection language={currentLang} />
             </div>
-            <Footer />
+            <Footer language={currentLang} />
         </div>
     );
 };

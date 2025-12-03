@@ -3,15 +3,19 @@ import { useState } from "react";
 import { Dialog } from "./dialog";
 import type { Config } from "../../shared/types";
 import { defaultConfig } from "../../shared/types";
+import { getTranslation, type Language } from "../i18n";
 
 type DefaultsButtonProps = {
     setConfig: React.Dispatch<React.SetStateAction<Config>>;
+    language: Language;
 };
 
 export const DefaultsButton: React.FC<DefaultsButtonProps> = ({
     setConfig,
+    language,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const t = getTranslation(language);
 
     const handleConfirm = () => {
         setIsOpen(false);
@@ -24,18 +28,18 @@ export const DefaultsButton: React.FC<DefaultsButtonProps> = ({
                 onClick={() => setIsOpen(true)}
                 className="bg-gray-600 hover:bg-gray-700 w-48 text-white text-lg font-semibold py-2 px-4 rounded shadow"
             >
-                Default Settings
+                {t.defaultSettings}
             </button>
 
             <Dialog
-                title="Load default settings?"
-                confirmText="Yes"
-                cancelText="No"
+                title={t.defaultSettingsDialogTitle}
+                confirmText={t.dialogYes}
+                cancelText={t.dialogNo}
                 setIsOpen={setIsOpen}
                 isOpen={isOpen}
                 handleConfirm={handleConfirm}
             >
-                <small>Restart application to apply all changes.</small>
+                <small>{t.restartToApply}</small>
             </Dialog>
         </div>
     );

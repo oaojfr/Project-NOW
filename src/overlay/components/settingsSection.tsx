@@ -3,6 +3,7 @@ import type { Config } from "../../shared/types";
 import { ReloadButton } from "./reloadButton";
 import { DefaultsButton } from "./defaultsButton";
 import { FaInfoCircle } from "react-icons/fa";
+import { getTranslation, languageOptions, type Language } from "../i18n";
 
 type SettingsSectionProps = {
     config: Config;
@@ -60,6 +61,28 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
     config,
     setConfig,
 }) => {
+    const currentLang = (config.language || "en") as Language;
+    const t = getTranslation(currentLang);
+
+    const getColorLabel = (value: string) => {
+        const colorLabels: Record<string, keyof typeof t> = {
+            "": "colorDefault",
+            "#0066cc": "colorBlue",
+            "#cc0016": "colorRed",
+            "#fbf203": "colorYellow",
+            "#e412e1": "colorPink",
+        };
+        const key = colorLabels[value];
+        return key ? t[key] : value;
+    };
+
+    const getFpsLabel = (value: number) => {
+        if (value >= 120) {
+            return `${value} FPS - ${t.ultimateOnly}`;
+        }
+        return `${value} FPS`;
+    };
+
     const getColorClass = (value: string) => {
         return (
             colorOptions.find((opt) => opt.value === value)?.className ||
@@ -131,6 +154,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
         }
     };
 
+    const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const updated = { ...config, language: e.target.value };
+        setConfig(updated);
+    };
+
     /*const onToggle = (key: keyof Config, value: boolean) => {
         const update = { [key]: value };
         window.electronAPI.saveConfig(update);
@@ -139,21 +167,41 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
     return (
         <section className="p-4 text-gray-200 max-w-md mx-auto">
-            <h2 className="text-xl font-semibold mb-4">Settings</h2>
+            <h2 className="text-xl font-semibold mb-4">{t.settings}</h2>
             <div className="space-y-4">
                 <label className="flex items-center justify-between">
                     <span>
-                        Accent Color
+                        {t.language}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Sets a custom accent color
-                                <br />
-                                for GeForce NOW.
+                                {t.languageTooltip}
+                            </div>
+                        </div>
+                    </span>
+                    <select
+                        value={currentLang}
+                        onChange={handleLanguageChange}
+                        className="rounded p-2 bg-[#23272b] border border-gray-600 ml-4 text-white"
+                    >
+                        {languageOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <label className="flex items-center justify-between">
+                    <span>
+                        {t.accentColor}
+                        <div className="relative group inline-block">
+                            <FaInfoCircle className="ml-2 cursor-pointer peer" />
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.accentColorTooltip}
                             </div>
                         </div>
                         <br />
-                        <small>Reload GFN to apply changes</small>
+                        <small>{t.reloadToApply}</small>
                     </span>
                     <select
                         value={getColor()}
@@ -166,26 +214,22 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                                 value={option.value}
                                 className={option.className}
                             >
-                                {option.label}
+                                {getColorLabel(option.value)}
                             </option>
                         ))}
                     </select>
                 </label>
                 <label className="flex items-center justify-between">
                     <span>
-                        User Agent
+                        {t.userAgent}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Changes the User Agent — use this
-                                <br />
-                                if you experience issues
-                                <br />
-                                launching or playing games.
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.userAgentTooltip}
                             </div>
                         </div>
                         <br />
-                        <small>Restart application to apply changes</small>
+                        <small>{t.restartToApply}</small>
                     </span>
                     <select
                         value={getUserAgent()}
@@ -201,13 +245,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                 </label>
                 <label className="flex items-center justify-between">
                     <span>
-                        Resolution
+                        {t.resolution}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Select the target monitor resolution
-                                <br />
-                                used for streaming.
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.resolutionTooltip}
                             </div>
                         </div>
                     </span>
@@ -225,11 +267,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                 </label>
                 <label className="flex items-center justify-between">
                     <span>
-                        FPS
+                        {t.fps}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Select the target frame rate.
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.fpsTooltip}
                             </div>
                         </div>
                     </span>
@@ -240,7 +282,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                     >
                         {fpsOptions.map((option) => (
                             <option key={option.value} value={option.value}>
-                                {option.label}
+                                {getFpsLabel(option.value)}
                             </option>
                         ))}
                     </select>
@@ -248,13 +290,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
                 <label className="flex items-center justify-between">
                     <span>
-                        Discord Rich Presence
+                        {t.discordRichPresence}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Enables Discord Rich Presence, which displays
-                                <br />
-                                your current game in your Discord status.
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.discordRichPresenceTooltip}
                             </div>
                         </div>
                     </span>
@@ -268,13 +308,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
                 <label className="flex items-center justify-between">
                     <span>
-                        Game Ready Notification
+                        {t.gameReadyNotification}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Enables a notification when the gaming rig is
-                                <br />
-                                ready.
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.gameReadyNotificationTooltip}
                             </div>
                         </div>
                     </span>
@@ -288,19 +326,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
                 <label className="flex items-center justify-between">
                     <span>
-                        Autofocus
+                        {t.autofocus}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Enables autofocus on the window
-                                <br />
-                                when the gaming rig is ready
-                                <br />
-                                or when you're about to be kicked
-                                <br />
-                                due to inactivity (Inactivity Notification
-                                <br />
-                                must be enabled).
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.autofocusTooltip}
                             </div>
                         </div>
                     </span>
@@ -314,13 +344,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
                 <label className="flex items-center justify-between">
                     <span>
-                        Automute
+                        {t.automute}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Automatically mutes the game
-                                <br />
-                                when the window is not focused.
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.automuteTooltip}
                             </div>
                         </div>
                     </span>
@@ -334,13 +362,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
                 <label className="flex items-center justify-between">
                     <span>
-                        Inactivity Notification
+                        {t.inactivityNotification}
                         <div className="relative group inline-block">
                             <FaInfoCircle className="ml-2 cursor-pointer peer" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                Enables a notification when you're about to be
-                                <br />
-                                kicked due to inactivity.
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-pre-line z-10 pointer-events-none">
+                                {t.inactivityNotificationTooltip}
                             </div>
                         </div>
                     </span>
@@ -353,8 +379,8 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                 </label>
             </div>
             <div className="flex justify-evenly w-full mt-10 mb-2">
-                <ReloadButton />
-                <DefaultsButton setConfig={setConfig} />
+                <ReloadButton language={currentLang} />
+                <DefaultsButton setConfig={setConfig} language={currentLang} />
             </div>
         </section>
     );
