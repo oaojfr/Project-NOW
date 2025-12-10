@@ -2,10 +2,183 @@ import { ipcMain, app } from "electron";
 import path from "path";
 import fs from "fs";
 import os from "os";
+import https from "https";
+
+// SteamGridDB API configuration
+const STEAMGRIDDB_API_KEY = "fe038819ce05b928fa9a1b186c6689a4";
+const STEAMGRIDDB_API_URL = "https://www.steamgriddb.com/api/v2";
 
 interface ShortcutInfo {
     gameName: string;
     gameId: string;
+}
+
+interface SGDBGame {
+    id: number;
+    name: string;
+}
+
+interface SGDBIcon {
+    id: number;
+    url: string;
+    thumb: string;
+    width: number;
+    height: number;
+}
+
+// Get icons cache directory
+function getIconsCacheDir(): string {
+    const userDataPath = app.getPath("userData");
+    const cacheDir = path.join(userDataPath, "icons-cache");
+    if (!fs.existsSync(cacheDir)) {
+        fs.mkdirSync(cacheDir, { recursive: true });
+    }
+    return cacheDir;
+}
+
+// Make API request to SteamGridDB
+async function sgdbRequest<T>(endpoint: string): Promise<T | null> {
+    return new Promise((resolve) => {
+        const url = `${STEAMGRIDDB_API_URL}${endpoint}`;
+        console.log("[SteamGridDB] Request:", url);
+        
+        const req = https.request(url, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${STEAMGRIDDB_API_KEY}`,
+                "Accept": "application/json"
+            }
+        }, (res) => {
+            let data = "";
+            res.on("data", chunk => data += chunk);
+            res.on("end", () => {
+                try {
+                    const json = JSON.parse(data);
+                    if (json.success) {
+                        resolve(json.data as T);
+                    } else {
+                        console.log("[SteamGridDB] API error:", json);
+                        resolve(null);
+                    }
+                } catch (e) {
+                    console.error("[SteamGridDB] Parse error:", e);
+                    resolve(null);
+                }
+            });
+        });
+        
+        req.on("error", (e) => {
+            console.error("[SteamGridDB] Request error:", e);
+            resolve(null);
+        });
+        
+        req.end();
+    });
+}
+
+// Search for a game on SteamGridDB
+async function searchGame(gameName: string): Promise<SGDBGame | null> {
+    const games = await sgdbRequest<SGDBGame[]>(`/search/autocomplete/${encodeURIComponent(gameName)}`);
+    if (games && games.length > 0) {
+        console.log("[SteamGridDB] Found game:", games[0].name, "ID:", games[0].id);
+        return games[0];
+    }
+    return null;
+}
+
+// Get icons for a game
+async function getGameIcons(gameId: number): Promise<SGDBIcon[]> {
+    const icons = await sgdbRequest<SGDBIcon[]>(`/icons/game/${gameId}`);
+    return icons || [];
+}
+
+// Download an icon file
+async function downloadIcon(url: string, destPath: string): Promise<boolean> {
+    return new Promise((resolve) => {
+        const file = fs.createWriteStream(destPath);
+        
+        https.get(url, (response) => {
+            // Handle redirects
+            if (response.statusCode === 301 || response.statusCode === 302) {
+                const redirectUrl = response.headers.location;
+                if (redirectUrl) {
+                    file.close();
+                    fs.unlinkSync(destPath);
+                    downloadIcon(redirectUrl, destPath).then(resolve);
+                    return;
+                }
+            }
+            
+            response.pipe(file);
+            file.on("finish", () => {
+                file.close();
+                console.log("[SteamGridDB] Icon downloaded:", destPath);
+                resolve(true);
+            });
+        }).on("error", (err) => {
+            file.close();
+            fs.unlinkSync(destPath);
+            console.error("[SteamGridDB] Download error:", err);
+            resolve(false);
+        });
+    });
+}
+
+// Get or download icon for a game
+async function getGameIcon(gameName: string): Promise<string | null> {
+    try {
+        const cacheDir = getIconsCacheDir();
+        const sanitizedName = sanitizeFilename(gameName);
+        
+        // Check if we already have a cached icon
+        const cachedIco = path.join(cacheDir, `${sanitizedName}.ico`);
+        const cachedPng = path.join(cacheDir, `${sanitizedName}.png`);
+        
+        if (fs.existsSync(cachedIco)) {
+            console.log("[SteamGridDB] Using cached icon:", cachedIco);
+            return cachedIco;
+        }
+        if (fs.existsSync(cachedPng)) {
+            console.log("[SteamGridDB] Using cached icon:", cachedPng);
+            return cachedPng;
+        }
+        
+        // Search for the game
+        const game = await searchGame(gameName);
+        if (!game) {
+            console.log("[SteamGridDB] Game not found:", gameName);
+            return null;
+        }
+        
+        // Get icons
+        const icons = await getGameIcons(game.id);
+        if (icons.length === 0) {
+            console.log("[SteamGridDB] No icons found for:", gameName);
+            return null;
+        }
+        
+        // Pick the best icon (prefer ICO for Windows compatibility)
+        let selectedIcon = icons[0];
+        const icoIcon = icons.find(i => i.url.endsWith(".ico"));
+        if (icoIcon) {
+            selectedIcon = icoIcon;
+        }
+        
+        // Determine file extension
+        const ext = selectedIcon.url.match(/\.(ico|png)$/i)?.[1] || "png";
+        const iconPath = path.join(cacheDir, `${sanitizedName}.${ext}`);
+        
+        // Download the icon
+        const success = await downloadIcon(selectedIcon.url, iconPath);
+        if (success) {
+            return iconPath;
+        }
+        
+        return null;
+    } catch (error) {
+        console.error("[SteamGridDB] Error getting icon:", error);
+        return null;
+    }
 }
 
 // Get the application executable path based on the platform
@@ -67,9 +240,14 @@ async function createWindowsShortcut(info: ShortcutInfo): Promise<{ success: boo
     const desktopPath = getDesktopPath();
     const shortcutPath = path.join(desktopPath, `${sanitizeFilename(info.gameName)}.lnk`);
     const execPath = getAppExecutablePath();
-    const iconPath = app.isPackaged 
-        ? path.join(path.dirname(execPath), "resources", "assets", "resources", "infinitylogo.ico")
-        : path.join(__dirname, "..", "..", "assets", "resources", "infinitylogo.ico");
+    
+    // Try to get game icon from SteamGridDB, fallback to app icon
+    let iconPath = await getGameIcon(info.gameName);
+    if (!iconPath) {
+        iconPath = app.isPackaged 
+            ? path.join(path.dirname(execPath), "resources", "assets", "resources", "infinitylogo.ico")
+            : path.join(__dirname, "..", "..", "assets", "resources", "infinitylogo.ico");
+    }
 
     // Use a temp file to avoid encoding/escaping issues with special characters
     const tempDir = os.tmpdir();
@@ -116,17 +294,22 @@ async function createLinuxShortcut(info: ShortcutInfo): Promise<{ success: boole
     const shortcutPath = path.join(desktopPath, `${sanitizeFilename(info.gameName)}.desktop`);
     const execPath = getAppExecutablePath();
     
-    let iconPath = "";
-    const possibleIconPaths = [
-        path.join(path.dirname(execPath), "resources", "assets", "resources", "infinitylogo.png"),
-        "/opt/ProjectNOW/resources/assets/resources/infinitylogo.png",
-        path.join(__dirname, "..", "..", "assets", "resources", "infinitylogo.png"),
-    ];
+    // Try to get game icon from SteamGridDB first
+    let iconPath = await getGameIcon(info.gameName);
     
-    for (const p of possibleIconPaths) {
-        if (fs.existsSync(p)) {
-            iconPath = p;
-            break;
+    // Fallback to app icon if no game icon found
+    if (!iconPath) {
+        const possibleIconPaths = [
+            path.join(path.dirname(execPath), "resources", "assets", "resources", "infinitylogo.png"),
+            "/opt/ProjectNOW/resources/assets/resources/infinitylogo.png",
+            path.join(__dirname, "..", "..", "assets", "resources", "infinitylogo.png"),
+        ];
+        
+        for (const p of possibleIconPaths) {
+            if (fs.existsSync(p)) {
+                iconPath = p;
+                break;
+            }
         }
     }
 
@@ -134,7 +317,7 @@ async function createLinuxShortcut(info: ShortcutInfo): Promise<{ success: boole
 Name=${info.gameName}
 Comment=Launch ${info.gameName} on GeForce NOW via Project NOW
 Exec="${execPath}" --game-id=${info.gameId}
-Icon=${iconPath}
+Icon=${iconPath || ""}
 Terminal=false
 Type=Application
 Categories=Game;

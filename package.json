@@ -1,6 +1,6 @@
 {
     "name": "project-now",
-    "version": "1.2.3hotfix2",
+    "version": "1.2.4",
     "main": "dist/electron/main.js",
     "scripts": {
         "lint": "eslint .",
@@ -75,7 +75,8 @@
         "electron-updater": "^6.6.2",
         "firebase": "^12.0.0",
         "node-abi": "^4.12.0",
-        "react-icons": "^5.5.0"
+        "react-icons": "^5.5.0",
+        "steamgriddb": "^2.2.1"
     },
     "build": {
         "appId": "net.oaojfr.projectnow",
