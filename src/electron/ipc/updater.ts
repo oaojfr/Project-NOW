@@ -1,6 +1,13 @@
 import { BrowserWindow, ipcMain, app, Notification, shell } from "electron";
-import { autoUpdater } from "electron-updater";
 import path from "path";
+
+// Try to load autoUpdater, but it may fail with non-semver versions
+let autoUpdater: typeof import("electron-updater").autoUpdater | null = null;
+try {
+    autoUpdater = require("electron-updater").autoUpdater;
+} catch (error) {
+    console.warn("[Updater] electron-updater not available:", error);
+}
 
 const GITHUB_REPO = "oaojfr/Project-NOW";
 const GITHUB_RELEASES_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
@@ -26,12 +33,12 @@ interface UpdateCheckResult {
 
 // Compare two semantic version strings (returns 1 if v1 > v2, -1 if v1 < v2, 0 if equal)
 function compareVersions(v1: string, v2: string): number {
-    // Remove 'v' prefix if present
-    const clean1 = v1.replace(/^v/, "");
-    const clean2 = v2.replace(/^v/, "");
+    // Remove 'v' prefix and any suffix like 'hotfix', 'beta', etc.
+    const clean1 = v1.replace(/^v/, "").replace(/[^0-9.].*/g, "");
+    const clean2 = v2.replace(/^v/, "").replace(/[^0-9.].*/g, "");
     
-    const parts1 = clean1.split(".").map(Number);
-    const parts2 = clean2.split(".").map(Number);
+    const parts1 = clean1.split(".").map(s => parseInt(s, 10) || 0);
+    const parts2 = clean2.split(".").map(s => parseInt(s, 10) || 0);
     
     const maxLength = Math.max(parts1.length, parts2.length);
     
@@ -112,23 +119,32 @@ export function registerUpdaterHandlers({
 }: {
     mainWindow: BrowserWindow;
 }) {
-    ipcMain.handle("check-for-updates-legacy", () => autoUpdater.checkForUpdates());
-    ipcMain.on("quit-and-install", () => autoUpdater.quitAndInstall());
-    ipcMain.handle("download-update", async () => {
-        try {
-            await autoUpdater.downloadUpdate();
-        } catch (e) {
-            console.error("Failed download update:", e);
-        }
-    });
+    // Legacy electron-updater handlers (only if autoUpdater is available)
+    if (autoUpdater) {
+        ipcMain.handle("check-for-updates-legacy", () => autoUpdater!.checkForUpdates());
+        ipcMain.on("quit-and-install", () => autoUpdater!.quitAndInstall());
+        ipcMain.handle("download-update", async () => {
+            try {
+                await autoUpdater!.downloadUpdate();
+            } catch (e) {
+                console.error("Failed download update:", e);
+            }
+        });
 
-    autoUpdater.on("update-available", () => {
-        mainWindow.webContents.send("update-available");
-    });
-    autoUpdater.on("update-downloaded", () => {
-        mainWindow.webContents.send("update-downloaded");
-    });
+        autoUpdater.on("update-available", () => {
+            mainWindow.webContents.send("update-available");
+        });
+        autoUpdater.on("update-downloaded", () => {
+            mainWindow.webContents.send("update-downloaded");
+        });
+    } else {
+        // Register dummy handlers to avoid "no handler" errors
+        ipcMain.handle("check-for-updates-legacy", () => null);
+        ipcMain.on("quit-and-install", () => {});
+        ipcMain.handle("download-update", async () => {});
+    }
 
+    // GitHub-based update checker (always works)
     ipcMain.handle("check-for-updates", async () => {
         const result = await checkForGitHubUpdates();
         return result;

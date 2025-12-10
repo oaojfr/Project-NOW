@@ -213,7 +213,23 @@ async function createGameShortcut(info: ShortcutInfo): Promise<{ success: boolea
 function extractGameIdFromUrl(url: string): string | null {
     try {
         const urlObj = new URL(url);
-        return urlObj.searchParams.get("game-id");
+        
+        // Try different parameter names used by GeForce NOW
+        const gameId = urlObj.searchParams.get("game-id") 
+            || urlObj.searchParams.get("gameId")
+            || urlObj.searchParams.get("game_id");
+        
+        if (gameId) return gameId;
+        
+        // Try to extract from URL path (e.g., /games/game-id-here)
+        const pathMatch = urlObj.pathname.match(/\/games?\/([a-f0-9-]{36})/i);
+        if (pathMatch) return pathMatch[1];
+        
+        // Try to find UUID pattern anywhere in the URL
+        const uuidMatch = url.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
+        if (uuidMatch) return uuidMatch[0];
+        
+        return null;
     } catch {
         return null;
     }
