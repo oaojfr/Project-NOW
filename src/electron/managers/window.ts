@@ -5,9 +5,31 @@ import { getIconPath } from "../utils";
 
 export const GFN_WEBSITE = "https://play.geforcenow.com/";
 
+/**
+ * Build the GeForce NOW URL with optional game ID
+ */
+export function buildGfnUrl(gameId?: string): string {
+    if (gameId) {
+        return `${GFN_WEBSITE}games?game-id=${gameId}`;
+    }
+    return GFN_WEBSITE;
+}
+
+/**
+ * Parse command line arguments to extract game ID
+ */
+export function parseGameIdFromArgs(args: string[]): string | undefined {
+    for (const arg of args) {
+        if (arg.startsWith("--game-id=")) {
+            return arg.replace("--game-id=", "");
+        }
+    }
+    return undefined;
+}
+
 const preloadPath = path.resolve(__dirname, "..", "preload.js");
 
-export function createMainWindow(): BrowserWindow {
+export function createMainWindow(gameId?: string): BrowserWindow {
     const iconPath = getIconPath();
 
     const mainWindow = new BrowserWindow({
@@ -37,7 +59,10 @@ export function createMainWindow(): BrowserWindow {
         console.log("[UserAgent] Using default");
     }
 
+    const targetUrl = buildGfnUrl(gameId);
+    console.log("[Window] Loading URL:", targetUrl);
+    
     //mainWindow.webContents.openDevTools();
-    mainWindow.loadURL(GFN_WEBSITE);
+    mainWindow.loadURL(targetUrl);
     return mainWindow;
 }

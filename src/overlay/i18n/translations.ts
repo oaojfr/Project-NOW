@@ -55,8 +55,14 @@ export type TranslationKeys = {
 
     // Footer
     checkForUpdates: string;
+    checkingForUpdates: string;
+    upToDate: string;
+    updateAvailableText: string;
+    updateError: string;
+    available: string;
 
     // Color options
+    colorGfnGreen: string;
     colorDefault: string;
     colorBlue: string;
     colorRed: string;
@@ -65,6 +71,22 @@ export type TranslationKeys = {
 
     // FPS options
     ultimateOnly: string;
+
+    // Game Shortcuts
+    gameShortcuts: string;
+    gameName: string;
+    gameNamePlaceholder: string;
+    gameId: string;
+    gameIdPlaceholder: string;
+    extractFromUrl: string;
+    gameIdHelp: string;
+    createShortcut: string;
+    creating: string;
+    creatingShortcut: string;
+    shortcutCreated: string;
+    shortcutError: string;
+    fillAllFields: string;
+    noGameIdFound: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -115,8 +137,14 @@ const translations: Record<Language, TranslationKeys> = {
 
         // Footer
         checkForUpdates: "Check for\nupdates",
+        checkingForUpdates: "Checking...",
+        upToDate: "Up to date!",
+        updateAvailableText: "Update",
+        updateError: "Error",
+        available: "available",
 
         // Color options
+        colorGfnGreen: "GFN Green",
         colorDefault: "Default",
         colorBlue: "Blue",
         colorRed: "Red",
@@ -125,6 +153,22 @@ const translations: Record<Language, TranslationKeys> = {
 
         // FPS options
         ultimateOnly: "Ultimate Only",
+
+        // Game Shortcuts
+        gameShortcuts: "Game Shortcuts",
+        gameName: "Game Name",
+        gameNamePlaceholder: "e.g., Cyberpunk 2077",
+        gameId: "Game ID",
+        gameIdPlaceholder: "e.g., dcff9c03-5971-4992-ab7d-0f655ef0bfe2",
+        extractFromUrl: "Extract from current URL",
+        gameIdHelp: "Navigate to a game page and click 📋 to extract the ID",
+        createShortcut: "Create Desktop Shortcut",
+        creating: "Creating...",
+        creatingShortcut: "Creating shortcut...",
+        shortcutCreated: "Shortcut created successfully!",
+        shortcutError: "Error creating shortcut",
+        fillAllFields: "Please fill in all fields",
+        noGameIdFound: "No game ID found in current URL",
     },
 
     fr: {
@@ -174,8 +218,14 @@ const translations: Record<Language, TranslationKeys> = {
 
         // Footer
         checkForUpdates: "Vérifier les\nmises à jour",
+        checkingForUpdates: "Vérification...",
+        upToDate: "À jour !",
+        updateAvailableText: "Mise à jour",
+        updateError: "Erreur",
+        available: "disponible",
 
         // Color options
+        colorGfnGreen: "Vert GFN",
         colorDefault: "Par défaut",
         colorBlue: "Bleu",
         colorRed: "Rouge",
@@ -184,6 +234,22 @@ const translations: Record<Language, TranslationKeys> = {
 
         // FPS options
         ultimateOnly: "Ultimate uniquement",
+
+        // Game Shortcuts
+        gameShortcuts: "Raccourcis de jeux",
+        gameName: "Nom du jeu",
+        gameNamePlaceholder: "ex: Cyberpunk 2077",
+        gameId: "ID du jeu",
+        gameIdPlaceholder: "ex: dcff9c03-5971-4992-ab7d-0f655ef0bfe2",
+        extractFromUrl: "Extraire de l'URL actuelle",
+        gameIdHelp: "Naviguez vers une page de jeu et cliquez 📋 pour extraire l'ID",
+        createShortcut: "Créer un raccourci bureau",
+        creating: "Création...",
+        creatingShortcut: "Création du raccourci...",
+        shortcutCreated: "Raccourci créé avec succès !",
+        shortcutError: "Erreur lors de la création du raccourci",
+        fillAllFields: "Veuillez remplir tous les champs",
+        noGameIdFound: "Aucun ID de jeu trouvé dans l'URL actuelle",
     },
 
     pt: {
@@ -233,8 +299,14 @@ const translations: Record<Language, TranslationKeys> = {
 
         // Footer
         checkForUpdates: "Verificar\natualizações",
+        checkingForUpdates: "Verificando...",
+        upToDate: "Atualizado!",
+        updateAvailableText: "Atualização",
+        updateError: "Erro",
+        available: "disponível",
 
         // Color options
+        colorGfnGreen: "Verde GFN",
         colorDefault: "Padrão",
         colorBlue: "Azul",
         colorRed: "Vermelho",
@@ -243,6 +315,22 @@ const translations: Record<Language, TranslationKeys> = {
 
         // FPS options
         ultimateOnly: "Apenas Ultimate",
+
+        // Game Shortcuts
+        gameShortcuts: "Atalhos de Jogos",
+        gameName: "Nome do Jogo",
+        gameNamePlaceholder: "ex: Cyberpunk 2077",
+        gameId: "ID do Jogo",
+        gameIdPlaceholder: "ex: dcff9c03-5971-4992-ab7d-0f655ef0bfe2",
+        extractFromUrl: "Extrair da URL atual",
+        gameIdHelp: "Navegue até uma página de jogo e clique 📋 para extrair o ID",
+        createShortcut: "Criar Atalho na Área de Trabalho",
+        creating: "Criando...",
+        creatingShortcut: "Criando atalho...",
+        shortcutCreated: "Atalho criado com sucesso!",
+        shortcutError: "Erro ao criar atalho",
+        fillAllFields: "Por favor, preencha todos os campos",
+        noGameIdFound: "Nenhum ID de jogo encontrado na URL atual",
     },
 
     es: {
@@ -292,8 +380,14 @@ const translations: Record<Language, TranslationKeys> = {
 
         // Footer
         checkForUpdates: "Buscar\nactualizaciones",
+        checkingForUpdates: "Verificando...",
+        upToDate: "¡Actualizado!",
+        updateAvailableText: "Actualización",
+        updateError: "Error",
+        available: "disponible",
 
         // Color options
+        colorGfnGreen: "Verde GFN",
         colorDefault: "Predeterminado",
         colorBlue: "Azul",
         colorRed: "Rojo",
@@ -302,6 +396,22 @@ const translations: Record<Language, TranslationKeys> = {
 
         // FPS options
         ultimateOnly: "Solo Ultimate",
+
+        // Game Shortcuts
+        gameShortcuts: "Accesos Directos de Juegos",
+        gameName: "Nombre del Juego",
+        gameNamePlaceholder: "ej: Cyberpunk 2077",
+        gameId: "ID del Juego",
+        gameIdPlaceholder: "ej: dcff9c03-5971-4992-ab7d-0f655ef0bfe2",
+        extractFromUrl: "Extraer de la URL actual",
+        gameIdHelp: "Navega a una página de juego y haz clic en 📋 para extraer el ID",
+        createShortcut: "Crear Acceso Directo en el Escritorio",
+        creating: "Creando...",
+        creatingShortcut: "Creando acceso directo...",
+        shortcutCreated: "¡Acceso directo creado con éxito!",
+        shortcutError: "Error al crear el acceso directo",
+        fillAllFields: "Por favor, rellena todos los campos",
+        noGameIdFound: "No se encontró ID de juego en la URL actual",
     },
 
     it: {
@@ -351,8 +461,14 @@ const translations: Record<Language, TranslationKeys> = {
 
         // Footer
         checkForUpdates: "Controlla\naggiornamenti",
+        checkingForUpdates: "Controllo...",
+        upToDate: "Aggiornato!",
+        updateAvailableText: "Aggiornamento",
+        updateError: "Errore",
+        available: "disponibile",
 
         // Color options
+        colorGfnGreen: "Verde GFN",
         colorDefault: "Predefinito",
         colorBlue: "Blu",
         colorRed: "Rosso",
@@ -361,6 +477,22 @@ const translations: Record<Language, TranslationKeys> = {
 
         // FPS options
         ultimateOnly: "Solo Ultimate",
+
+        // Game Shortcuts
+        gameShortcuts: "Scorciatoie Giochi",
+        gameName: "Nome del Gioco",
+        gameNamePlaceholder: "es: Cyberpunk 2077",
+        gameId: "ID del Gioco",
+        gameIdPlaceholder: "es: dcff9c03-5971-4992-ab7d-0f655ef0bfe2",
+        extractFromUrl: "Estrai dall'URL attuale",
+        gameIdHelp: "Naviga su una pagina di gioco e clicca 📋 per estrarre l'ID",
+        createShortcut: "Crea Collegamento sul Desktop",
+        creating: "Creazione...",
+        creatingShortcut: "Creazione collegamento...",
+        shortcutCreated: "Collegamento creato con successo!",
+        shortcutError: "Errore nella creazione del collegamento",
+        fillAllFields: "Per favore, compila tutti i campi",
+        noGameIdFound: "Nessun ID gioco trovato nell'URL attuale",
     },
 };
 

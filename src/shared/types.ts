@@ -5,7 +5,7 @@ export const defaultConfig: Config = {
     notify: true,
     rpcEnabled: true,
     informed: false,
-    accentColor: "",
+    accentColor: "#76b900",
     inactivityNotification: false,
     monitorWidth: 1920,
     monitorHeight: 1080,

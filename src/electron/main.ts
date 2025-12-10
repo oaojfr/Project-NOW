@@ -12,7 +12,8 @@ import fs from "fs";
 import { promises as fsPromises } from "fs";
 
 import { registerIpcHandlers } from "./ipc";
-import { createMainWindow } from "./managers/window";
+import { checkUpdatesOnStartup } from "./ipc/updater";
+import { createMainWindow, parseGameIdFromArgs } from "./managers/window";
 import { getConfig, saveConfig, loadConfig } from "./managers/config";
 import { createTray } from "./managers/tray";
 import { clientId, initRpcClient, updateActivity } from "./managers/discord";
@@ -467,7 +468,13 @@ app.whenReady().then(async () => {
     await registerAppProtocols();
     loadConfig();
 
-    const mainWindow = createMainWindow();
+    // Parse game ID from command line arguments
+    const gameId = parseGameIdFromArgs(process.argv);
+    if (gameId) {
+        console.log("[Main] Starting with game ID:", gameId);
+    }
+
+    const mainWindow = createMainWindow(gameId);
     createTray(mainWindow);
 
     registerIpcHandlers({
@@ -494,6 +501,9 @@ app.whenReady().then(async () => {
     await patchFetchForSessionRequest(mainWindow);
 
     setupWindowEvents(mainWindow);
+
+    // Check for updates on startup
+    checkUpdatesOnStartup(mainWindow);
 });
 
 app.on("will-quit", () => {

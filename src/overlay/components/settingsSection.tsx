@@ -11,11 +11,7 @@ type SettingsSectionProps = {
 };
 
 const colorOptions = [
-    {
-        label: "Default",
-        value: "",
-        className: "bg-transparent text-white",
-    },
+    { label: "GFN Green", value: "#76b900", className: "bg-[#76b900] text-white" },
     { label: "Blue", value: "#0066cc", className: "bg-[#0066cc] text-white" },
     { label: "Red", value: "#cc0016", className: "bg-[#cc0016] text-white" },
     { label: "Yellow", value: "#fbf203", className: "bg-[#fbf203] text-black" },
@@ -66,7 +62,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
     const getColorLabel = (value: string) => {
         const colorLabels: Record<string, keyof typeof t> = {
-            "": "colorDefault",
+            "#76b900": "colorGfnGreen",
             "#0066cc": "colorBlue",
             "#cc0016": "colorRed",
             "#fbf203": "colorYellow",
@@ -379,7 +375,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                 </label>
             </div>
             <div className="flex justify-evenly w-full mt-10 mb-2">
-                <ReloadButton language={currentLang} />
+                <ReloadButton language={currentLang} accentColor={config.accentColor} />
                 <DefaultsButton setConfig={setConfig} language={currentLang} />
             </div>
         </section>
