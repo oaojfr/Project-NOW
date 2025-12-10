@@ -17,11 +17,13 @@ This project was originally created by **[AstralVixen](https://github.com/Astral
 
 ## 🚀 **Features**
 
-- **Up to 360 FPS support (GFN ultimate required)**
-- **Up to 5K resolution support (GFN performance or up required)**
+- **120FPS+ support (GFN ultimate required)**
+- **Up to 4K resolution support (GFN performance or up required)**
 - **Ultrawide resolutions support (21:9, 32:9)**
-- **30FPS support (GFN performance or up required for some reason)**
-- **720p resolution support (GFN performance or up required for some reason)**
+- **Game Desktop Shortcuts**: Create desktop shortcuts to launch specific games directly! Works on Windows, Linux, and macOS.
+- **Auto-update checker**: Automatically checks for new versions on GitHub and notifies you when updates are available.
+- **Customizable accent color**: Choose your preferred accent color, including the official GeForce NOW green.
+- **Multi-language support**: Available in English, French, Portuguese, Spanish, and Italian.
 - **Inactivity notification:** Alerts you when you're about to be kicked due to inactivity.
 - **Automute:** Mutes the game when the window is not in focus.
 - **Auto refocus:** Alt-tabs you back into the game if you're unfocused when inactivity timer starts (both autofocus and inactivity notifications must be enabled).
@@ -33,14 +35,22 @@ This project was originally created by **[AstralVixen](https://github.com/Astral
 - **Instant App Switch**: Automatically switch to Project NOW once your gaming rig is ready for action!
 - **Notifications**: Get notified once your gaming rig is ready for action!
 
-## 🛠️ **Planned Features**
+## 🎮 **Game Shortcuts**
 
-We have several exciting features planned to further enhance your experience:
+You can create desktop shortcuts to launch specific games directly from GeForce NOW!
 
-- **HDR support**
-- **Surround sound support**
-- **Account Switching**: Easily switch between different connected accounts within GeForce NOW.
-- **Automatic Game Startup**: Customize which game starts automatically when the app launches.
+1. Press `Ctrl+I` to open the sidebar
+2. Go to the **🎮 Game Shortcuts** tab
+3. Navigate to a game page on GeForce NOW and click 📋 to extract the game ID, or enter it manually
+4. Enter the game name and click **Create Desktop Shortcut**
+
+The shortcut will be created on your desktop. Double-click it to launch Project NOW directly on that game's page!
+
+**Command line usage:**
+```bash
+# Launch Project NOW with a specific game
+./ProjectNOW --game-id=dcff9c03-5971-4992-ab7d-0f655ef0bfe2
+```
 
 ## ⚠️ **Disclaimer**
 
@@ -58,6 +68,8 @@ Press `Ctrl+I` to open sidebar to access Project NOW features.
 
 Press `Ctrl+I` to open sidebar and change **Resolution** and **FPS** to your liking.
 **DO NOT USE** native GeForce NOW settings for resolution and FPS, Project NOW **doesn't** alter GeForce NOW settings, so you still see 1080p max resolution and 60 FPS. Project NOW override these values.
+
+Note : Some resolutions are not working, they are just implemented in case GFN supports them in the future.
 
 
 ## 🛠️ **Build**
@@ -100,5 +112,3 @@ Project NOW is licensed under the [MIT License](LICENSE). See the [LICENSE](LICE
 For questions, feedback, or suggestions, feel free to reach out to me:
 
 - [GitHub Issues](https://github.com/oaojfr/Project-NOW/issues)
-- Email: [astral.vixen.hu@gmail.com](mailto:astral.vixen.hu@gmail.com)
-- Discord: [Join my discord](https://discord.gg/p5vRgQwZ9K)
