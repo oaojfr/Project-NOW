@@ -87,6 +87,11 @@ export type TranslationKeys = {
     shortcutError: string;
     fillAllFields: string;
     noGameIdFound: string;
+    // Linux shortcut locations
+    shortcutLocation: string;
+    locationDesktop: string;
+    locationApplications: string;
+    locationBoth: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -169,6 +174,11 @@ const translations: Record<Language, TranslationKeys> = {
         shortcutError: "Error creating shortcut",
         fillAllFields: "Please fill in all fields",
         noGameIdFound: "No game ID found in current URL",
+        // Linux shortcut locations
+        shortcutLocation: "Shortcut Location",
+        locationDesktop: "Desktop",
+        locationApplications: "Applications Menu",
+        locationBoth: "Both",
     },
 
     fr: {
@@ -250,6 +260,11 @@ const translations: Record<Language, TranslationKeys> = {
         shortcutError: "Erreur lors de la création du raccourci",
         fillAllFields: "Veuillez remplir tous les champs",
         noGameIdFound: "Aucun ID de jeu trouvé dans l'URL actuelle",
+        // Linux shortcut locations
+        shortcutLocation: "Emplacement du raccourci",
+        locationDesktop: "Bureau",
+        locationApplications: "Menu des applications",
+        locationBoth: "Les deux",
     },
 
     pt: {
@@ -331,6 +346,11 @@ const translations: Record<Language, TranslationKeys> = {
         shortcutError: "Erro ao criar atalho",
         fillAllFields: "Por favor, preencha todos os campos",
         noGameIdFound: "Nenhum ID de jogo encontrado na URL atual",
+        // Linux shortcut locations
+        shortcutLocation: "Local do Atalho",
+        locationDesktop: "Área de Trabalho",
+        locationApplications: "Menu de Aplicativos",
+        locationBoth: "Ambos",
     },
 
     es: {
@@ -412,6 +432,11 @@ const translations: Record<Language, TranslationKeys> = {
         shortcutError: "Error al crear el acceso directo",
         fillAllFields: "Por favor, rellena todos los campos",
         noGameIdFound: "No se encontró ID de juego en la URL actual",
+        // Linux shortcut locations
+        shortcutLocation: "Ubicación del Acceso Directo",
+        locationDesktop: "Escritorio",
+        locationApplications: "Menú de Aplicaciones",
+        locationBoth: "Ambos",
     },
 
     it: {
@@ -493,6 +518,11 @@ const translations: Record<Language, TranslationKeys> = {
         shortcutError: "Errore nella creazione del collegamento",
         fillAllFields: "Per favore, compila tutti i campi",
         noGameIdFound: "Nessun ID gioco trovato nell'URL attuale",
+        // Linux shortcut locations
+        shortcutLocation: "Posizione del Collegamento",
+        locationDesktop: "Desktop",
+        locationApplications: "Menu Applicazioni",
+        locationBoth: "Entrambi",
     },
 };
 

@@ -3,8 +3,11 @@ import type { Config } from "../shared/types";
 interface ShortcutResult {
     success: boolean;
     path?: string;
+    paths?: string[];
     error?: string;
 }
+
+type LinuxShortcutLocation = "desktop" | "applications" | "both";
 
 interface UpdateCheckResult {
     updateAvailable: boolean;
@@ -27,7 +30,7 @@ declare global {
             getTailwindCss: () => string;
             reloadGFN: () => void;
             // Game shortcut APIs
-            createGameShortcut: (info: { gameName: string; gameId: string }) => Promise<ShortcutResult>;
+            createGameShortcut: (info: { gameName: string; gameId: string; linuxLocation?: LinuxShortcutLocation }) => Promise<ShortcutResult>;
             getPlatform: () => Promise<string>;
             extractGameId: (url: string) => Promise<string | null>;
             // Update APIs

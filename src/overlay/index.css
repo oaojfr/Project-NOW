@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Simple toggle switch style (vložiť do CSS alebo global styles) */
-
 input[type="checkbox"].toggle {
     appearance: none;
     width: 40px;
@@ -16,7 +14,7 @@ input[type="checkbox"].toggle {
 }
 
 input[type="checkbox"].toggle:checked {
-    background: #3b82f6; /* blue-500 */
+    background: var(--accent-color, #3b82f6);
 }
 
 input[type="checkbox"].toggle::before {

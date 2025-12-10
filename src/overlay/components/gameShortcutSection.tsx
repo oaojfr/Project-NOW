@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getTranslation, type Language } from "../i18n";
+
+type LinuxShortcutLocation = "desktop" | "applications" | "both";
 
 type GameShortcutSectionProps = {
     language: Language;
@@ -11,6 +13,12 @@ export const GameShortcutSection: React.FC<GameShortcutSectionProps> = ({ langua
     const [gameId, setGameId] = useState("");
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [statusMessage, setStatusMessage] = useState("");
+    const [platform, setPlatform] = useState<string>("");
+    const [linuxLocation, setLinuxLocation] = useState<LinuxShortcutLocation>("desktop");
+
+    useEffect(() => {
+        window.electronAPI.getPlatform().then((p) => setPlatform(p));
+    }, []);
 
     const extractGameIdFromCurrentPage = async () => {
         const currentUrl = window.location.href;
@@ -39,11 +47,15 @@ export const GameShortcutSection: React.FC<GameShortcutSectionProps> = ({ langua
             const result = await window.electronAPI.createGameShortcut({
                 gameName: gameName.trim(),
                 gameId: gameId.trim(),
+                ...(platform === "linux" && { linuxLocation }),
             });
 
             if (result.success) {
                 setStatus("success");
-                setStatusMessage(t.shortcutCreated || `Shortcut created: ${result.path}`);
+                const pathInfo = result.paths && result.paths.length > 1 
+                    ? result.paths.join("\n") 
+                    : result.path;
+                setStatusMessage(t.shortcutCreated || `Shortcut created: ${pathInfo}`);
                 // Clear fields after success
                 setTimeout(() => {
                     setGameName("");
@@ -103,6 +115,22 @@ export const GameShortcutSection: React.FC<GameShortcutSectionProps> = ({ langua
                         {t.gameIdHelp || "Navigate to a game page and click 📋 to extract the ID"}
                     </p>
                 </div>
+
+                {/* Linux Location Selector */}
+                {platform === "linux" && (
+                    <div>
+                        <label className="block text-sm mb-1">{t.shortcutLocation || "Shortcut Location"}</label>
+                        <select
+                            value={linuxLocation}
+                            onChange={(e) => setLinuxLocation(e.target.value as LinuxShortcutLocation)}
+                            className="w-full px-3 py-2 bg-[#1a1d21] border border-gray-600 rounded text-[#babec4] text-sm focus:outline-none focus:border-[#76b900]"
+                        >
+                            <option value="desktop">{t.locationDesktop || "Desktop"}</option>
+                            <option value="applications">{t.locationApplications || "Applications Menu"}</option>
+                            <option value="both">{t.locationBoth || "Both"}</option>
+                        </select>
+                    </div>
+                )}
 
                 {/* Create Button */}
                 <button

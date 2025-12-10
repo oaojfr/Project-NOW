@@ -51,7 +51,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
         callback: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void
     ) => ipcRenderer.on("update-downloaded", callback),
     downloadUpdate: () => ipcRenderer.invoke("download-update"),
-    createGameShortcut: (info: { gameName: string; gameId: string }) => 
+    createGameShortcut: (info: { gameName: string; gameId: string; linuxLocation?: string }) => 
         ipcRenderer.invoke("create-game-shortcut", info),
     getPlatform: () => ipcRenderer.invoke("get-platform"),
     extractGameId: (url: string) => ipcRenderer.invoke("extract-game-id", url),

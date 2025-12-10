@@ -299,6 +299,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                         checked={config.rpcEnabled}
                         onChange={() => handleToggle("rpcEnabled")}
                         className="toggle toggle-primary"
+                        style={{ "--accent-color": config.accentColor } as React.CSSProperties}
                     />
                 </label>
 
@@ -317,6 +318,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                         checked={config.notify}
                         onChange={() => handleToggle("notify")}
                         className="toggle toggle-primary"
+                        style={{ "--accent-color": config.accentColor } as React.CSSProperties}
                     />
                 </label>
 
@@ -335,6 +337,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                         checked={config.autofocus}
                         onChange={() => handleToggle("autofocus")}
                         className="toggle toggle-primary"
+                        style={{ "--accent-color": config.accentColor } as React.CSSProperties}
                     />
                 </label>
 
@@ -353,6 +356,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                         checked={config.automute}
                         onChange={() => handleToggle("automute")}
                         className="toggle toggle-primary"
+                        style={{ "--accent-color": config.accentColor } as React.CSSProperties}
                     />
                 </label>
 
@@ -371,6 +375,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                         checked={config.inactivityNotification}
                         onChange={() => handleToggle("inactivityNotification")}
                         className="toggle toggle-primary"
+                        style={{ "--accent-color": config.accentColor } as React.CSSProperties}
                     />
                 </label>
             </div>

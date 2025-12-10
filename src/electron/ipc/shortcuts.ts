@@ -8,9 +8,12 @@ import https from "https";
 const STEAMGRIDDB_API_KEY = "fe038819ce05b928fa9a1b186c6689a4";
 const STEAMGRIDDB_API_URL = "https://www.steamgriddb.com/api/v2";
 
+export type LinuxShortcutLocation = "desktop" | "applications" | "both";
+
 interface ShortcutInfo {
     gameName: string;
     gameId: string;
+    linuxLocation?: LinuxShortcutLocation;
 }
 
 interface SGDBGame {
@@ -200,6 +203,20 @@ function getAppExecutablePath(): string {
     }
 }
 
+// Get the applications directory path for Linux
+function getApplicationsPath(): string {
+    const homeDir = os.homedir();
+    const xdgDataHome = process.env.XDG_DATA_HOME || path.join(homeDir, ".local", "share");
+    const applicationsPath = path.join(xdgDataHome, "applications");
+    
+    // Ensure the directory exists
+    if (!fs.existsSync(applicationsPath)) {
+        fs.mkdirSync(applicationsPath, { recursive: true });
+    }
+    
+    return applicationsPath;
+}
+
 // Get the desktop path for the current user
 function getDesktopPath(): string {
     const homeDir = os.homedir();
@@ -289,10 +306,10 @@ $Shortcut.Save()
 }
 
 // Create a Linux .desktop file
-async function createLinuxShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; error?: string }> {
-    const desktopPath = getDesktopPath();
-    const shortcutPath = path.join(desktopPath, `${sanitizeFilename(info.gameName)}.desktop`);
+async function createLinuxShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; paths?: string[]; error?: string }> {
+    const location = info.linuxLocation || "desktop";
     const execPath = getAppExecutablePath();
+    const shortcutFilename = `${sanitizeFilename(info.gameName)}.desktop`;
     
     // Try to get game icon from SteamGridDB first
     let iconPath = await getGameIcon(info.gameName);
@@ -324,13 +341,39 @@ Categories=Game;
 StartupNotify=true
 `;
 
-    try {
-        fs.writeFileSync(shortcutPath, desktopEntry, { mode: 0o755 });
-        fs.chmodSync(shortcutPath, 0o755);
-        
-        return { success: true, path: shortcutPath };
-    } catch (error) {
-        return { success: false, error: (error as Error).message };
+    const paths: string[] = [];
+    const errors: string[] = [];
+
+    // Determine which paths to create shortcuts in
+    const targetPaths: string[] = [];
+    if (location === "desktop" || location === "both") {
+        targetPaths.push(path.join(getDesktopPath(), shortcutFilename));
+    }
+    if (location === "applications" || location === "both") {
+        targetPaths.push(path.join(getApplicationsPath(), shortcutFilename));
+    }
+
+    for (const shortcutPath of targetPaths) {
+        try {
+            fs.writeFileSync(shortcutPath, desktopEntry, { mode: 0o755 });
+            fs.chmodSync(shortcutPath, 0o755);
+            paths.push(shortcutPath);
+        } catch (error) {
+            errors.push(`${shortcutPath}: ${(error as Error).message}`);
+        }
+    }
+
+    if (paths.length > 0) {
+        return { 
+            success: true, 
+            path: paths[0], 
+            paths: paths 
+        };
+    } else {
+        return { 
+            success: false, 
+            error: errors.join("; ") 
+        };
     }
 }
 
