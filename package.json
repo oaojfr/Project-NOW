@@ -78,8 +78,8 @@
         "react-icons": "^5.5.0"
     },
     "build": {
-        "appId": "net.astralvixen.projectnow",
-        "productName": "ProjectNOW",
+        "appId": "net.oaojfr.projectnow",
+        "productName": "Project NOW",
         "files": [
             "node_modules/**/*",
             "package.json",
@@ -124,7 +124,7 @@
                 "entry": {
                     "Name": "Project NOW",
                     "Comment": "Enhance your GeForce NOW application experience!",
-                    "GenericName": "ProjectNOW",
+                    "GenericName": "Project NOW",
                     "Terminal": "false",
                     "Type": "Application",
                     "StartupNotify": "false",
