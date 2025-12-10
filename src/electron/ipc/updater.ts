@@ -24,10 +24,7 @@ interface UpdateCheckResult {
     error?: string;
 }
 
-/**
- * Compare two semantic version strings
- * Returns: 1 if v1 > v2, -1 if v1 < v2, 0 if equal
- */
+// Compare two semantic version strings (returns 1 if v1 > v2, -1 if v1 < v2, 0 if equal)
 function compareVersions(v1: string, v2: string): number {
     // Remove 'v' prefix if present
     const clean1 = v1.replace(/^v/, "");
@@ -49,9 +46,7 @@ function compareVersions(v1: string, v2: string): number {
     return 0;
 }
 
-/**
- * Check for updates by fetching the latest release from GitHub
- */
+// Check for updates by fetching the latest release from GitHub
 async function checkForGitHubUpdates(): Promise<UpdateCheckResult> {
     const currentVersion = app.getVersion();
     
@@ -96,9 +91,6 @@ async function checkForGitHubUpdates(): Promise<UpdateCheckResult> {
     }
 }
 
-/**
- * Show a notification when an update is available
- */
 function showUpdateNotification(result: UpdateCheckResult, mainWindow: BrowserWindow) {
     if (!result.updateAvailable) return;
     
@@ -120,7 +112,6 @@ export function registerUpdaterHandlers({
 }: {
     mainWindow: BrowserWindow;
 }) {
-    // Legacy electron-updater handlers (for future auto-update support)
     ipcMain.handle("check-for-updates-legacy", () => autoUpdater.checkForUpdates());
     ipcMain.on("quit-and-install", () => autoUpdater.quitAndInstall());
     ipcMain.handle("download-update", async () => {
@@ -138,7 +129,6 @@ export function registerUpdaterHandlers({
         mainWindow.webContents.send("update-downloaded");
     });
 
-    // New GitHub-based update checker
     ipcMain.handle("check-for-updates", async () => {
         const result = await checkForGitHubUpdates();
         return result;
@@ -153,22 +143,18 @@ export function registerUpdaterHandlers({
     });
 }
 
-/**
- * Check for updates on startup and show notification if available
- */
+// Check for updates on startup
 export async function checkUpdatesOnStartup(mainWindow: BrowserWindow) {
-    // Wait a bit before checking to not slow down startup
     setTimeout(async () => {
         try {
             const result = await checkForGitHubUpdates();
             if (result.updateAvailable) {
                 showUpdateNotification(result, mainWindow);
-                // Also send to renderer
                 mainWindow.webContents.send("github-update-available", result);
             }
         } catch (error) {
             console.error("[Updater] Startup check failed:", error);
         }
-    }, 5000); // Check 5 seconds after startup
+    }, 5000);
 }
 

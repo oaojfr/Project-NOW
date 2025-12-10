@@ -8,9 +8,7 @@ interface ShortcutInfo {
     gameId: string;
 }
 
-/**
- * Get the application executable path based on the platform and packaging
- */
+// Get the application executable path based on the platform
 function getAppExecutablePath(): string {
     if (app.isPackaged) {
         // For packaged app
@@ -29,9 +27,7 @@ function getAppExecutablePath(): string {
     }
 }
 
-/**
- * Get the desktop path for the current user
- */
+// Get the desktop path for the current user
 function getDesktopPath(): string {
     const homeDir = os.homedir();
     
@@ -61,17 +57,12 @@ function getDesktopPath(): string {
     }
 }
 
-/**
- * Sanitize filename by removing invalid characters
- */
 function sanitizeFilename(name: string): string {
-    // Remove characters that are invalid in filenames across all platforms
+    // Remove characters that are invalid in filenames
     return name.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
 }
 
-/**
- * Create a Windows .lnk shortcut (uses PowerShell)
- */
+// Create a Windows .lnk shortcut using PowerShell with temp script file
 async function createWindowsShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; error?: string }> {
     const desktopPath = getDesktopPath();
     const shortcutPath = path.join(desktopPath, `${sanitizeFilename(info.gameName)}.lnk`);
@@ -80,23 +71,36 @@ async function createWindowsShortcut(info: ShortcutInfo): Promise<{ success: boo
         ? path.join(path.dirname(execPath), "resources", "assets", "resources", "infinitylogo.ico")
         : path.join(__dirname, "..", "..", "assets", "resources", "infinitylogo.ico");
 
-    // PowerShell script to create the shortcut
+    // Use a temp file to avoid encoding/escaping issues with special characters
+    const tempDir = os.tmpdir();
+    const tempScriptPath = path.join(tempDir, `create-shortcut-${Date.now()}.ps1`);
+    
     const psScript = `
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $WshShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut('${shortcutPath.replace(/'/g, "''")}')
-$Shortcut.TargetPath = '${execPath.replace(/'/g, "''")}'
-$Shortcut.Arguments = '--game-id=${info.gameId}'
-$Shortcut.WorkingDirectory = '${path.dirname(execPath).replace(/'/g, "''")}'
-$Shortcut.Description = 'Launch ${info.gameName.replace(/'/g, "''")} on GeForce NOW'
-if (Test-Path '${iconPath.replace(/'/g, "''")}') {
-    $Shortcut.IconLocation = '${iconPath.replace(/'/g, "''")}'
+$Shortcut = $WshShell.CreateShortcut("${shortcutPath.replace(/\\/g, "\\\\").replace(/"/g, '`"')}")
+$Shortcut.TargetPath = "${execPath.replace(/\\/g, "\\\\").replace(/"/g, '`"')}"
+$Shortcut.Arguments = "--game-id=${info.gameId}"
+$Shortcut.WorkingDirectory = "${path.dirname(execPath).replace(/\\/g, "\\\\").replace(/"/g, '`"')}"
+$Shortcut.Description = "Launch ${info.gameName.replace(/"/g, "'")} on GeForce NOW"
+if (Test-Path "${iconPath.replace(/\\/g, "\\\\").replace(/"/g, '`"')}") {
+    $Shortcut.IconLocation = "${iconPath.replace(/\\/g, "\\\\").replace(/"/g, '`"')}"
 }
 $Shortcut.Save()
 `;
 
     return new Promise((resolve) => {
         const { exec } = require("child_process");
-        exec(`powershell -Command "${psScript.replace(/"/g, '\\"').replace(/\n/g, " ")}"`, (error: Error | null) => {
+        
+        // Write script to temp file with UTF-8 BOM for proper encoding
+        const BOM = "\uFEFF";
+        fs.writeFileSync(tempScriptPath, BOM + psScript, { encoding: "utf8" });
+        
+        // Execute the script file
+        exec(`powershell -ExecutionPolicy Bypass -File "${tempScriptPath}"`, (error: Error | null) => {
+            // Clean up temp file
+            try { fs.unlinkSync(tempScriptPath); } catch {}
+            
             if (error) {
                 resolve({ success: false, error: error.message });
             } else {
@@ -106,15 +110,12 @@ $Shortcut.Save()
     });
 }
 
-/**
- * Create a Linux .desktop file
- */
+// Create a Linux .desktop file
 async function createLinuxShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; error?: string }> {
     const desktopPath = getDesktopPath();
     const shortcutPath = path.join(desktopPath, `${sanitizeFilename(info.gameName)}.desktop`);
     const execPath = getAppExecutablePath();
     
-    // Icon path - try multiple locations
     let iconPath = "";
     const possibleIconPaths = [
         path.join(path.dirname(execPath), "resources", "assets", "resources", "infinitylogo.png"),
@@ -142,8 +143,6 @@ StartupNotify=true
 
     try {
         fs.writeFileSync(shortcutPath, desktopEntry, { mode: 0o755 });
-        
-        // Make the .desktop file executable
         fs.chmodSync(shortcutPath, 0o755);
         
         return { success: true, path: shortcutPath };
@@ -152,33 +151,27 @@ StartupNotify=true
     }
 }
 
-/**
- * Create a macOS .app shortcut (using shell script wrapper)
- */
+// Create a macOS .app shortcut
 async function createMacOSShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; error?: string }> {
     const desktopPath = getDesktopPath();
     const appName = sanitizeFilename(info.gameName);
     const appPath = path.join(desktopPath, `${appName}.app`);
     const execPath = getAppExecutablePath();
     
-    // Create the .app bundle structure
     const contentsPath = path.join(appPath, "Contents");
     const macOSPath = path.join(contentsPath, "MacOS");
     const resourcesPath = path.join(contentsPath, "Resources");
     
     try {
-        // Create directories
         fs.mkdirSync(macOSPath, { recursive: true });
         fs.mkdirSync(resourcesPath, { recursive: true });
         
-        // Create the launcher script
         const launcherScript = `#!/bin/bash
 "${execPath}" --game-id=${info.gameId}
 `;
         const launcherPath = path.join(macOSPath, appName);
         fs.writeFileSync(launcherPath, launcherScript, { mode: 0o755 });
         
-        // Create Info.plist
         const infoPlist = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -206,9 +199,6 @@ async function createMacOSShortcut(info: ShortcutInfo): Promise<{ success: boole
     }
 }
 
-/**
- * Create a desktop shortcut for a game
- */
 async function createGameShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; error?: string }> {
     switch (process.platform) {
         case "win32":
@@ -220,9 +210,6 @@ async function createGameShortcut(info: ShortcutInfo): Promise<{ success: boolea
     }
 }
 
-/**
- * Extract game ID from a GeForce NOW URL
- */
 function extractGameIdFromUrl(url: string): string | null {
     try {
         const urlObj = new URL(url);

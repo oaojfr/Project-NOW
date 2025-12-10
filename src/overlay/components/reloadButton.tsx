@@ -11,10 +11,8 @@ export const ReloadButton: React.FC<ReloadButtonProps> = ({ language, accentColo
     const [isOpen, setIsOpen] = useState(false);
     const t = getTranslation(language);
 
-    // Default to GFN green if no accent color
     const buttonColor = accentColor || "#76b900";
     
-    // Calculate hover color (slightly darker)
     const darkenColor = (hex: string) => {
         const num = parseInt(hex.replace("#", ""), 16);
         const r = Math.max(0, (num >> 16) - 25);

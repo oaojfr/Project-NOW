@@ -51,12 +51,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
         callback: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void
     ) => ipcRenderer.on("update-downloaded", callback),
     downloadUpdate: () => ipcRenderer.invoke("download-update"),
-    // Game shortcut APIs
     createGameShortcut: (info: { gameName: string; gameId: string }) => 
         ipcRenderer.invoke("create-game-shortcut", info),
     getPlatform: () => ipcRenderer.invoke("get-platform"),
     extractGameId: (url: string) => ipcRenderer.invoke("extract-game-id", url),
-    // GitHub update APIs
     getAppVersion: () => ipcRenderer.invoke("get-app-version"),
     openReleasesPage: () => ipcRenderer.invoke("open-releases-page"),
     onGitHubUpdateAvailable: (callback: (event: Electron.IpcRendererEvent, result: unknown) => void) =>

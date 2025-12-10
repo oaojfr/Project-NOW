@@ -502,7 +502,6 @@ app.whenReady().then(async () => {
 
     setupWindowEvents(mainWindow);
 
-    // Check for updates on startup
     checkUpdatesOnStartup(mainWindow);
 });
 

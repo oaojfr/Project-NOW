@@ -5,9 +5,7 @@ import { getIconPath } from "../utils";
 
 export const GFN_WEBSITE = "https://play.geforcenow.com/";
 
-/**
- * Build the GeForce NOW URL with optional game ID
- */
+// Build the GeForce NOW URL with optional game ID
 export function buildGfnUrl(gameId?: string): string {
     if (gameId) {
         return `${GFN_WEBSITE}games?game-id=${gameId}`;
@@ -15,9 +13,7 @@ export function buildGfnUrl(gameId?: string): string {
     return GFN_WEBSITE;
 }
 
-/**
- * Parse command line arguments to extract game ID
- */
+// Parse command line arguments to extract game ID
 export function parseGameIdFromArgs(args: string[]): string | undefined {
     for (const arg of args) {
         if (arg.startsWith("--game-id=")) {
