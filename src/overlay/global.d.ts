@@ -7,7 +7,7 @@ interface ShortcutResult {
     error?: string;
 }
 
-type LinuxShortcutLocation = "desktop" | "applications" | "both";
+type ShortcutLocation = "desktop" | "startmenu" | "both";
 
 interface UpdateCheckResult {
     updateAvailable: boolean;
@@ -30,7 +30,7 @@ declare global {
             getTailwindCss: () => string;
             reloadGFN: () => void;
             // Game shortcut APIs
-            createGameShortcut: (info: { gameName: string; gameId: string; linuxLocation?: LinuxShortcutLocation }) => Promise<ShortcutResult>;
+            createGameShortcut: (info: { gameName: string; gameId: string; location?: ShortcutLocation }) => Promise<ShortcutResult>;
             getPlatform: () => Promise<string>;
             extractGameId: (url: string) => Promise<string | null>;
             // Update APIs

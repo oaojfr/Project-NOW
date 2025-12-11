@@ -8,12 +8,12 @@ import https from "https";
 const STEAMGRIDDB_API_KEY = "fe038819ce05b928fa9a1b186c6689a4";
 const STEAMGRIDDB_API_URL = "https://www.steamgriddb.com/api/v2";
 
-export type LinuxShortcutLocation = "desktop" | "applications" | "both";
+export type ShortcutLocation = "desktop" | "startmenu" | "both";
 
 interface ShortcutInfo {
     gameName: string;
     gameId: string;
-    linuxLocation?: LinuxShortcutLocation;
+    location?: ShortcutLocation;
 }
 
 interface SGDBGame {
@@ -247,26 +247,24 @@ function getDesktopPath(): string {
     }
 }
 
+// Get Windows Start Menu Programs path
+function getWindowsStartMenuPath(): string {
+    const appData = process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming");
+    return path.join(appData, "Microsoft", "Windows", "Start Menu", "Programs");
+}
+
 function sanitizeFilename(name: string): string {
     // Remove characters that are invalid in filenames
     return name.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
 }
 
-// Create a Windows .lnk shortcut using PowerShell with temp script file
-async function createWindowsShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; error?: string }> {
-    const desktopPath = getDesktopPath();
-    const shortcutPath = path.join(desktopPath, `${sanitizeFilename(info.gameName)}.lnk`);
-    const execPath = getAppExecutablePath();
-    
-    // Try to get game icon from SteamGridDB, fallback to app icon
-    let iconPath = await getGameIcon(info.gameName);
-    if (!iconPath) {
-        iconPath = app.isPackaged 
-            ? path.join(path.dirname(execPath), "resources", "assets", "resources", "infinitylogo.ico")
-            : path.join(__dirname, "..", "..", "assets", "resources", "infinitylogo.ico");
-    }
-
-    // Use a temp file to avoid encoding/escaping issues with special characters
+// Create a single Windows .lnk shortcut at specified path
+async function createSingleWindowsShortcut(
+    shortcutPath: string, 
+    execPath: string, 
+    iconPath: string, 
+    info: ShortcutInfo
+): Promise<{ success: boolean; error?: string }> {
     const tempDir = os.tmpdir();
     const tempScriptPath = path.join(tempDir, `create-shortcut-${Date.now()}.ps1`);
     
@@ -286,28 +284,73 @@ $Shortcut.Save()
 
     return new Promise((resolve) => {
         const { exec } = require("child_process");
-        
-        // Write script to temp file with UTF-8 BOM for proper encoding
         const BOM = "\uFEFF";
         fs.writeFileSync(tempScriptPath, BOM + psScript, { encoding: "utf8" });
         
-        // Execute the script file
         exec(`powershell -ExecutionPolicy Bypass -File "${tempScriptPath}"`, (error: Error | null) => {
-            // Clean up temp file
             try { fs.unlinkSync(tempScriptPath); } catch {}
             
             if (error) {
                 resolve({ success: false, error: error.message });
             } else {
-                resolve({ success: true, path: shortcutPath });
+                resolve({ success: true });
             }
         });
     });
 }
 
+// Create Windows .lnk shortcut(s) at desktop and/or Start Menu
+async function createWindowsShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; paths?: string[]; error?: string }> {
+    const location = info.location || "desktop";
+    const execPath = getAppExecutablePath();
+    const shortcutFilename = `${sanitizeFilename(info.gameName)}.lnk`;
+    
+    // Try to get game icon from SteamGridDB, fallback to app icon
+    let iconPath = await getGameIcon(info.gameName);
+    if (!iconPath) {
+        iconPath = app.isPackaged 
+            ? path.join(path.dirname(execPath), "resources", "assets", "resources", "infinitylogo.ico")
+            : path.join(__dirname, "..", "..", "assets", "resources", "infinitylogo.ico");
+    }
+
+    const paths: string[] = [];
+    const errors: string[] = [];
+
+    // Determine which paths to create shortcuts in
+    const targetPaths: string[] = [];
+    if (location === "desktop" || location === "both") {
+        targetPaths.push(path.join(getDesktopPath(), shortcutFilename));
+    }
+    if (location === "startmenu" || location === "both") {
+        targetPaths.push(path.join(getWindowsStartMenuPath(), shortcutFilename));
+    }
+
+    for (const shortcutPath of targetPaths) {
+        const result = await createSingleWindowsShortcut(shortcutPath, execPath, iconPath, info);
+        if (result.success) {
+            paths.push(shortcutPath);
+        } else {
+            errors.push(`${shortcutPath}: ${result.error}`);
+        }
+    }
+
+    if (paths.length > 0) {
+        return { 
+            success: true, 
+            path: paths[0], 
+            paths: paths 
+        };
+    } else {
+        return { 
+            success: false, 
+            error: errors.join("; ") 
+        };
+    }
+}
+
 // Create a Linux .desktop file
 async function createLinuxShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; paths?: string[]; error?: string }> {
-    const location = info.linuxLocation || "desktop";
+    const location = info.location || "desktop";
     const execPath = getAppExecutablePath();
     const shortcutFilename = `${sanitizeFilename(info.gameName)}.desktop`;
     
@@ -349,7 +392,7 @@ StartupNotify=true
     if (location === "desktop" || location === "both") {
         targetPaths.push(path.join(getDesktopPath(), shortcutFilename));
     }
-    if (location === "applications" || location === "both") {
+    if (location === "startmenu" || location === "both") {
         targetPaths.push(path.join(getApplicationsPath(), shortcutFilename));
     }
 
@@ -425,7 +468,7 @@ async function createMacOSShortcut(info: ShortcutInfo): Promise<{ success: boole
     }
 }
 
-async function createGameShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; error?: string }> {
+async function createGameShortcut(info: ShortcutInfo): Promise<{ success: boolean; path?: string; paths?: string[]; error?: string }> {
     switch (process.platform) {
         case "win32":
             return createWindowsShortcut(info);

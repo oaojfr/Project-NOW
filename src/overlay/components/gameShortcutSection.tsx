@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getTranslation, type Language } from "../i18n";
 
-type LinuxShortcutLocation = "desktop" | "applications" | "both";
+type ShortcutLocation = "desktop" | "startmenu" | "both";
 
 type GameShortcutSectionProps = {
     language: Language;
@@ -14,7 +14,7 @@ export const GameShortcutSection: React.FC<GameShortcutSectionProps> = ({ langua
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [statusMessage, setStatusMessage] = useState("");
     const [platform, setPlatform] = useState<string>("");
-    const [linuxLocation, setLinuxLocation] = useState<LinuxShortcutLocation>("desktop");
+    const [shortcutLocation, setShortcutLocation] = useState<ShortcutLocation>("desktop");
 
     useEffect(() => {
         window.electronAPI.getPlatform().then((p) => setPlatform(p));
@@ -47,7 +47,7 @@ export const GameShortcutSection: React.FC<GameShortcutSectionProps> = ({ langua
             const result = await window.electronAPI.createGameShortcut({
                 gameName: gameName.trim(),
                 gameId: gameId.trim(),
-                ...(platform === "linux" && { linuxLocation }),
+                location: shortcutLocation,
             });
 
             if (result.success) {
@@ -71,6 +71,14 @@ export const GameShortcutSection: React.FC<GameShortcutSectionProps> = ({ langua
             setStatus("error");
             setStatusMessage(String(error));
         }
+    };
+
+    // Get platform-specific label for "Start Menu" / "Applications Menu"
+    const getStartMenuLabel = () => {
+        if (platform === "win32") {
+            return t.locationStartMenu || "Start Menu";
+        }
+        return t.locationApplications || "Applications Menu";
     };
 
     return (
@@ -116,17 +124,17 @@ export const GameShortcutSection: React.FC<GameShortcutSectionProps> = ({ langua
                     </p>
                 </div>
 
-                {/* Linux Location Selector */}
-                {platform === "linux" && (
+                {/* Location Selector (Windows and Linux) */}
+                {(platform === "linux" || platform === "win32") && (
                     <div>
                         <label className="block text-sm mb-1">{t.shortcutLocation || "Shortcut Location"}</label>
                         <select
-                            value={linuxLocation}
-                            onChange={(e) => setLinuxLocation(e.target.value as LinuxShortcutLocation)}
+                            value={shortcutLocation}
+                            onChange={(e) => setShortcutLocation(e.target.value as ShortcutLocation)}
                             className="w-full px-3 py-2 bg-[#1a1d21] border border-gray-600 rounded text-[#babec4] text-sm focus:outline-none focus:border-[#76b900]"
                         >
                             <option value="desktop">{t.locationDesktop || "Desktop"}</option>
-                            <option value="applications">{t.locationApplications || "Applications Menu"}</option>
+                            <option value="startmenu">{getStartMenuLabel()}</option>
                             <option value="both">{t.locationBoth || "Both"}</option>
                         </select>
                     </div>

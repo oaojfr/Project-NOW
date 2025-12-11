@@ -1,6 +1,6 @@
 {
     "name": "project-now",
-    "version": "1.2.4h1",
+    "version": "1.2.5",
     "main": "dist/electron/main.js",
     "scripts": {
         "lint": "eslint .",

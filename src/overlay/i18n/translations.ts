@@ -87,9 +87,10 @@ export type TranslationKeys = {
     shortcutError: string;
     fillAllFields: string;
     noGameIdFound: string;
-    // Linux shortcut locations
+    // Shortcut locations
     shortcutLocation: string;
     locationDesktop: string;
+    locationStartMenu: string;
     locationApplications: string;
     locationBoth: string;
 };
@@ -177,6 +178,7 @@ const translations: Record<Language, TranslationKeys> = {
         // Linux shortcut locations
         shortcutLocation: "Shortcut Location",
         locationDesktop: "Desktop",
+        locationStartMenu: "Start Menu",
         locationApplications: "Applications Menu",
         locationBoth: "Both",
     },
@@ -263,6 +265,7 @@ const translations: Record<Language, TranslationKeys> = {
         // Linux shortcut locations
         shortcutLocation: "Emplacement du raccourci",
         locationDesktop: "Bureau",
+        locationStartMenu: "Menu Démarrer",
         locationApplications: "Menu des applications",
         locationBoth: "Les deux",
     },
@@ -349,6 +352,7 @@ const translations: Record<Language, TranslationKeys> = {
         // Linux shortcut locations
         shortcutLocation: "Local do Atalho",
         locationDesktop: "Área de Trabalho",
+        locationStartMenu: "Menu Iniciar",
         locationApplications: "Menu de Aplicativos",
         locationBoth: "Ambos",
     },
@@ -435,6 +439,7 @@ const translations: Record<Language, TranslationKeys> = {
         // Linux shortcut locations
         shortcutLocation: "Ubicación del Acceso Directo",
         locationDesktop: "Escritorio",
+        locationStartMenu: "Menú Inicio",
         locationApplications: "Menú de Aplicaciones",
         locationBoth: "Ambos",
     },
@@ -521,6 +526,7 @@ const translations: Record<Language, TranslationKeys> = {
         // Linux shortcut locations
         shortcutLocation: "Posizione del Collegamento",
         locationDesktop: "Desktop",
+        locationStartMenu: "Menu Start",
         locationApplications: "Menu Applicazioni",
         locationBoth: "Entrambi",
     },
