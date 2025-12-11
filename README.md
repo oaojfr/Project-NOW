@@ -9,11 +9,7 @@ This project was originally created by **[AstralVixen](https://github.com/Astral
 ## **Screenshots**
 
 ![Screenshot](src/assets/resources/Screenshot1.png)
-
-<p align="center">
-  <img src="src/assets/resources/Screenshot2.png" width="49%">
-  <img src="src/assets/resources/Screenshot3.png" width="49%">
-</p>
+![Screenshot](src/assets/resources/Screenshot2.png)
 
 ## 🚀 **Features**
 
