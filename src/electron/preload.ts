@@ -15,6 +15,19 @@ function getBrowserLanguage(): string {
     return ["en", "fr", "pt", "es", "it"].includes(lang) ? lang : "en";
 }
 
+let appLanguage = getBrowserLanguage();
+
+async function initAppLanguage() {
+    try {
+        const config = await ipcRenderer.invoke("get-config");
+        if (config && typeof config.language === "string") {
+            const lang = config.language.substring(0, 2);
+            if (["en", "fr", "pt", "es", "it"].includes(lang)) appLanguage = lang;
+        }
+    } catch (e) {
+    }
+}
+
 // Loading screen translations
 const loadingTranslations: Record<string, Record<string, string>> = {
     en: {
@@ -66,7 +79,7 @@ const loadingTranslations: Record<string, Record<string, string>> = {
 
 // Get translation for loading screen
 function getLoadingText(key: string): string {
-    const lang = getBrowserLanguage();
+    const lang = appLanguage || getBrowserLanguage();
     return loadingTranslations[lang]?.[key] || loadingTranslations.en[key];
 }
 
@@ -223,13 +236,14 @@ function autoClickPlayButton() {
     }, 500);
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
     const script = document.createElement("script");
     script.type = "module";
     script.src = "app://overlay/index.js";
     document.body.appendChild(script);
     
-    // Start auto-click detection
+    // Initialize language and then start auto-click detection
+    await initAppLanguage();
     autoClickPlayButton();
 });
 

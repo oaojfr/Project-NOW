@@ -87,6 +87,14 @@ export type TranslationKeys = {
     shortcutError: string;
     fillAllFields: string;
     noGameIdFound: string;
+    // Loading screen
+    launching: string;
+    connecting: string;
+    loadingPage: string;
+    waitingButton: string;
+    almostThere: string;
+    starting: string;
+    notFound: string;
     // Shortcut locations
     shortcutLocation: string;
     locationDesktop: string;
@@ -181,6 +189,14 @@ const translations: Record<Language, TranslationKeys> = {
         locationStartMenu: "Start Menu",
         locationApplications: "Applications Menu",
         locationBoth: "Both",
+        // Loading screen
+        launching: "Launching game...",
+        connecting: "Connecting to GeForce NOW...",
+        loadingPage: "Loading game page...",
+        waitingButton: "Waiting for Play button...",
+        almostThere: "Almost there...",
+        starting: "Starting game...",
+        notFound: "Could not find Play button. Click manually.",
     },
 
     fr: {
@@ -268,6 +284,14 @@ const translations: Record<Language, TranslationKeys> = {
         locationStartMenu: "Menu Démarrer",
         locationApplications: "Menu des applications",
         locationBoth: "Les deux",
+        // Loading screen
+        launching: "Lancement du jeu...",
+        connecting: "Connexion à GeForce NOW...",
+        loadingPage: "Chargement de la page...",
+        waitingButton: "Recherche du bouton Jouer...",
+        almostThere: "Presque prêt...",
+        starting: "Démarrage du jeu...",
+        notFound: "Bouton Jouer introuvable. Cliquez manuellement.",
     },
 
     pt: {
@@ -355,6 +379,14 @@ const translations: Record<Language, TranslationKeys> = {
         locationStartMenu: "Menu Iniciar",
         locationApplications: "Menu de Aplicativos",
         locationBoth: "Ambos",
+        // Loading screen
+        launching: "Iniciando jogo...",
+        connecting: "Conectando ao GeForce NOW...",
+        loadingPage: "Carregando página do jogo...",
+        waitingButton: "Aguardando botão Jogar...",
+        almostThere: "Quase lá...",
+        starting: "Iniciando jogo...",
+        notFound: "Botão Jogar não encontrado. Clique manualmente.",
     },
 
     es: {
@@ -442,6 +474,14 @@ const translations: Record<Language, TranslationKeys> = {
         locationStartMenu: "Menú Inicio",
         locationApplications: "Menú de Aplicaciones",
         locationBoth: "Ambos",
+        // Loading screen
+        launching: "Iniciando juego...",
+        connecting: "Conectando a GeForce NOW...",
+        loadingPage: "Cargando página del juego...",
+        waitingButton: "Esperando botón Jugar...",
+        almostThere: "Casi listo...",
+        starting: "Iniciando juego...",
+        notFound: "No se encontró el botón Jugar. Haz clic manualmente.",
     },
 
     it: {
@@ -529,6 +569,14 @@ const translations: Record<Language, TranslationKeys> = {
         locationStartMenu: "Menu Start",
         locationApplications: "Menu Applicazioni",
         locationBoth: "Entrambi",
+        // Loading screen
+        launching: "Avvio del gioco...",
+        connecting: "Connessione a GeForce NOW...",
+        loadingPage: "Caricamento pagina...",
+        waitingButton: "In attesa del pulsante Gioca...",
+        almostThere: "Quasi pronto...",
+        starting: "Avvio del gioco...",
+        notFound: "Pulsante Gioca non trovato. Clicca manualmente.",
     },
 };
 
