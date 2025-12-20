@@ -3,7 +3,7 @@ export const defaultConfig: Config = {
     autofocus: false,
     automute: false,
     notify: true,
-    rpcEnabled: true,
+    rpcEnabled: false,
     informed: false,
     accentColor: "#76b900",
     inactivityNotification: false,

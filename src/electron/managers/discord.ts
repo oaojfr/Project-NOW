@@ -13,6 +13,7 @@ export type RpcClient = {
 export const clientId = "1445408764399194283";
 let rpcClient: DiscordRPCClient | undefined;
 let startTimestamp: Date;
+let rpcReady = false;
 
 export function initRpcClient(start: Date, initialTitle: string) {
     startTimestamp = start;
@@ -21,27 +22,38 @@ export function initRpcClient(start: Date, initialTitle: string) {
 
         if (!rpcClient) return;
 
+        rpcReady = false;
         rpcClient.on("ready", () => {
+            rpcReady = true;
             console.log("Discord RPC connected");
             updateActivity(initialTitle);
         });
 
-        rpcClient.login({ clientId }).catch(console.error);
+        rpcClient.login({ clientId }).catch((err) => {
+            console.error("RPC login error:", err);
+            rpcClient = undefined;
+            rpcReady = false;
+        });
     } catch (err) {
         console.error("RPC init error:", err);
     }
 }
 
 export function updateActivity(gameTitle: string | null) {
-    if (!rpcClient) return;
+    if (!rpcClient || !rpcReady) return;
 
     try {
-        rpcClient.setActivity({
+        const maybePromise = (rpcClient as any).setActivity({
             state: gameTitle ? `Playing ${gameTitle}` : "Idling...",
             largeImageKey: "infinity_logo",
             largeImageText: "Project NOW",
             startTimestamp,
         });
+        if (maybePromise && typeof maybePromise.then === "function") {
+            (maybePromise as Promise<any>).catch((err) =>
+                console.error("Failed to set activity (async):", err)
+            );
+        }
     } catch (err) {
         console.error("Failed to set activity:", err);
     }

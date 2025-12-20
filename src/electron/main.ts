@@ -43,57 +43,7 @@ function registerCustomProtocols() {
 //TODO: in future we could greate "theme" CSS files, which will be overriding default nvidia styles,
 // so it would be less buggy, more stable, easier to maintain, debug and customizable, instead of
 // dynamically replacing it and running obbserver on top of DOM
-function replaceColorInCSS(mainWindow: BrowserWindow, accentColor: string) {
-    if (!accentColor || accentColor == "") {
-        return;
-    }
-    mainWindow.webContents.executeJavaScript(`
-    (function applyColorPatch() {
-      let observer;
-
-      function replaceColors() {
-        if (observer) observer.disconnect();
-
-        const styles = document.querySelectorAll('style');
-        styles.forEach(style => {
-          style.innerHTML = style.innerHTML.replace(/#76b900/gi, '${accentColor} !important');
-        });
-
-        const links = document.querySelectorAll('link[rel="stylesheet"]');
-        links.forEach(link => {
-          if (!link.__patched) {
-            link.removeAttribute("integrity");
-            link.removeAttribute("crossorigin");
-
-            fetch(link.href)
-              .then(response => response.text())
-              .then(css => {
-                const patchedCSS = css.replace(/#76b900/gi, '${accentColor} !important');
-                const blob = new Blob([patchedCSS], { type: 'text/css' });
-                const newUrl = URL.createObjectURL(blob);
-                link.href = newUrl;
-                link.__patched = true;
-              })
-              .catch(err => {
-                console.error("Failed to fetch/replace CSS for", link.href, err);
-              });
-          }
-        });
-
-        if (observer) {
-          observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
-        }
-      }
-
-      observer = new MutationObserver(() => {
-        replaceColors();
-      });
-
-      replaceColors();
-      observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
-    })();
-  `);
-}
+// CSS patching removed to avoid modifying GeForce NOW page styles
 
 async function registerAppProtocols() {
     protocol.handle("geforce-resource", async (request) => {
@@ -143,7 +93,7 @@ async function registerAppProtocols() {
 
 function registerShortcuts(mainWindow: BrowserWindow) {
     // Global shortcut works even during streaming when the video has focus
-    const success = globalShortcut.register("Control+I", () => {
+    /*const success = globalShortcut.register("Control+I", () => {
         mainWindow.webContents.send("sidebar-toggle");
     });
 
@@ -169,7 +119,7 @@ function registerShortcuts(mainWindow: BrowserWindow) {
             }).show();
         });
         saveConfig({ informed: true });
-    }
+    }*/
 }
 
 function setupWindowEvents(mainWindow: BrowserWindow) {
@@ -180,7 +130,7 @@ function setupWindowEvents(mainWindow: BrowserWindow) {
 
     mainWindow.webContents.on("did-finish-load", () => {
         const config = getConfig();
-        replaceColorInCSS(mainWindow, config.accentColor);
+        // replaceColorInCSS(mainWindow, config.accentColor);
         mainWindow.webContents.send("config-loaded", config);
         // Re-inject fetch interceptor to be safe (idempotent due to __gfiPatchApplied flag)
         patchFetchForSessionRequest(mainWindow);
@@ -344,6 +294,7 @@ function setupWindowEvents(mainWindow: BrowserWindow) {
 app.setName("Project NOW");
 app.commandLine.appendSwitch("enable-media-stream");
 app.commandLine.appendSwitch("ignore-gpu-blocklist");
+app.commandLine.appendSwitch("disable-dev-shm-usage");
 app.commandLine.appendSwitch("enable-accelerated-video");
 app.commandLine.appendSwitch("enable-gpu-rasterization");
 app.commandLine.appendSwitch("enable-zero-copy");
@@ -353,6 +304,7 @@ app.commandLine.appendSwitch(
     "disable-features",
     "UseChromeOSDirectVideoDecoder"
 );
+const isWayland = process.env.XDG_SESSION_TYPE === 'wayland' || process.env.WAYLAND_DISPLAY;
 app.commandLine.appendSwitch(
     "enable-features",
     [
@@ -409,6 +361,9 @@ async function patchFetchForSessionRequest(mainWindow: Electron.CrossProcessExpo
     
         const srd = parsed && parsed.sessionRequestData;
         if (!srd || srd.clientRequestMonitorSettings == null) return undefined;
+
+        // Only patch if launching a game (URL contains game-id)
+        if (!window.location.href.includes('game-id')) return undefined;
         
         const clientSettings = await window.electronAPI.getCurrentConfig();
         

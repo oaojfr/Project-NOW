@@ -6,13 +6,23 @@ import { defaultConfig } from "../shared/types";
 
 const css = window.electronAPI.getTailwindCss();
 
+// Create host element and attach a Shadow DOM to fully isolate overlay styles
+const host = document.createElement("div");
+host.id = "project-now-overlay-host";
+const shadow = host.attachShadow({ mode: "open" });
+
+// Inject Tailwind CSS inside the shadow root so it doesn't leak to the host page
 const style = document.createElement("style");
 style.textContent = css;
-document.head.appendChild(style);
+shadow.appendChild(style);
 
+// Mount point inside the shadow root
 const mount = document.createElement("div");
 mount.id = "project-now-sidebar-root";
-document.body.appendChild(mount);
+shadow.appendChild(mount);
+
+// Attach host to the document body
+document.body.appendChild(host);
 
 const App = () => {
     const [visible, setVisible] = React.useState(false);
