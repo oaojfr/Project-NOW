@@ -284,10 +284,19 @@ contextBridge.exposeInMainWorld("electronAPI", {
     downloadUpdate: () => ipcRenderer.invoke("download-update"),
     createGameShortcut: (info: { gameName: string; gameId: string; location?: string }) => 
         ipcRenderer.invoke("create-game-shortcut", info),
+    // List shortcuts created by Project NOW
+    getGameShortcuts: () => ipcRenderer.invoke("list-game-shortcuts"),
+    // Delete a shortcut by id
+    deleteGameShortcut: (id: string) => ipcRenderer.invoke("delete-game-shortcut", id),
+    // Edit a shortcut (rename) by id
+    editGameShortcut: (id: string, newName: string) => ipcRenderer.invoke("edit-game-shortcut", id, newName),
     getPlatform: () => ipcRenderer.invoke("get-platform"),
     extractGameId: (url: string) => ipcRenderer.invoke("extract-game-id", url),
     getAppVersion: () => ipcRenderer.invoke("get-app-version"),
     openReleasesPage: () => ipcRenderer.invoke("open-releases-page"),
     onGitHubUpdateAvailable: (callback: (event: Electron.IpcRendererEvent, result: unknown) => void) =>
         ipcRenderer.on("github-update-available", callback),
+    // Shortcut management
+    // Shortcut management
+    readFileAsDataUrl: (filePath: string) => ipcRenderer.invoke("read-file-data-url", filePath),
 });

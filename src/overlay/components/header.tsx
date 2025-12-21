@@ -20,7 +20,7 @@ export const Header: React.FC<HeaderProps> = ({ language }) => {
                 </div>
             </div>
 
-            <p>{t.statusConnected}</p>
+            
         </header>
     );
 };

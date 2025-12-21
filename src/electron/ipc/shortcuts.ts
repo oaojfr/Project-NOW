@@ -186,6 +186,13 @@ async function getGameIcon(gameName: string): Promise<string | null> {
 
 // Get the application executable path based on the platform
 function getAppExecutablePath(): string {
+    // Prefer explicit AppImage path when available to avoid pointing to temporary mount
+    // AppImage sets the APPIMAGE environment variable to the original AppImage file path
+    if (process.platform === "linux" && process.env.APPIMAGE) {
+        // Return the AppImage file itself so created shortcuts point to it
+        return process.env.APPIMAGE;
+    }
+
     if (app.isPackaged) {
         // For packaged app
         if (process.platform === "win32") {
@@ -194,13 +201,13 @@ function getAppExecutablePath(): string {
             // macOS: get the .app bundle path
             return process.execPath.replace(/\/Contents\/MacOS\/.*$/, "");
         } else {
-            // Linux
+            // Linux fallback: use execPath if APPIMAGE not available
             return process.execPath;
         }
-    } else {
-        // Development mode
-        return process.execPath;
     }
+
+    // Development mode
+    return process.execPath;
 }
 
 // Get the applications directory path for Linux
@@ -256,6 +263,36 @@ function getWindowsStartMenuPath(): string {
 function sanitizeFilename(name: string): string {
     // Remove characters that are invalid in filenames
     return name.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
+}
+
+// Path for storing index of created shortcuts
+const SHORTCUT_INDEX_FILENAME = "shortcuts.json";
+
+function getShortcutsIndexPath(): string {
+    // Returns a path under userData to keep track of created shortcuts
+    return path.join(app.getPath("userData"), SHORTCUT_INDEX_FILENAME);
+}
+
+function readShortcutsIndex(): any[] {
+    try {
+        const idxPath = getShortcutsIndexPath();
+        if (fs.existsSync(idxPath)) {
+            const raw = fs.readFileSync(idxPath, "utf-8");
+            return JSON.parse(raw) || [];
+        }
+    } catch (e) {
+        console.error("[Shortcuts] Failed to read shortcuts index:", e);
+    }
+    return [];
+}
+
+function writeShortcutsIndex(entries: any[]) {
+    try {
+        const idxPath = getShortcutsIndexPath();
+        fs.writeFileSync(idxPath, JSON.stringify(entries, null, 2), "utf-8");
+    } catch (e) {
+        console.error("[Shortcuts] Failed to write shortcuts index:", e);
+    }
 }
 
 // Create a single Windows .lnk shortcut at specified path
@@ -384,6 +421,16 @@ Categories=Game;
 StartupNotify=true
 `;
 
+    // Ensure the AppImage (or execPath) is executable so the desktop entry can run it
+    try {
+        if (process.platform === "linux" && fs.existsSync(execPath)) {
+            fs.chmodSync(execPath, 0o755);
+        }
+    } catch (e) {
+        // ignore chmod errors
+        console.warn("[Shortcuts] Could not chmod execPath:", execPath, e);
+    }
+
     const paths: string[] = [];
     const errors: string[] = [];
 
@@ -505,9 +552,111 @@ function extractGameIdFromUrl(url: string): string | null {
 }
 
 export function registerShortcutHandlers() {
+    // Handle creation: create OS shortcuts then index them in a JSON file
     ipcMain.handle("create-game-shortcut", async (_event, info: ShortcutInfo) => {
         console.log("[Shortcuts] Creating shortcut for:", info.gameName, "with ID:", info.gameId);
-        return createGameShortcut(info);
+        // Try to obtain a game icon path (may return null)
+        const iconPath = await getGameIcon(info.gameName);
+        const result = await createGameShortcut(info);
+
+        if (result.success) {
+            // Store metadata in index for later listing/editing/deleting
+            const entries = readShortcutsIndex();
+            const id = `${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+            // Build index entry including optional icon path
+            const entry = {
+                id,
+                gameName: info.gameName,
+                gameId: info.gameId,
+                location: info.location || "desktop",
+                paths: result.paths || (result.path ? [result.path] : []),
+                icon: iconPath || null,
+                createdAt: Date.now(),
+            };
+            entries.push(entry);
+            writeShortcutsIndex(entries);
+            return { ...result, id };
+        }
+
+        return result;
+    });
+
+    // List stored shortcuts
+    ipcMain.handle("list-game-shortcuts", () => {
+        return readShortcutsIndex();
+    });
+
+    // Delete a stored shortcut by id: remove files and index entry
+    ipcMain.handle("delete-game-shortcut", async (_event, id: string) => {
+        try {
+            const entries = readShortcutsIndex();
+            const idx = entries.findIndex((e: any) => e.id === id);
+            if (idx === -1) return { success: false, error: "Not found" };
+            const entry = entries[idx];
+
+            // Attempt to remove files referenced in entry.paths
+            if (Array.isArray(entry.paths)) {
+                for (const p of entry.paths) {
+                    try {
+                        if (fs.existsSync(p)) fs.unlinkSync(p);
+                    } catch (e) {
+                        console.warn("[Shortcuts] Failed to remove file:", p, e);
+                    }
+                }
+            }
+
+            // Remove from index and persist
+            entries.splice(idx, 1);
+            writeShortcutsIndex(entries);
+            return { success: true };
+        } catch (e) {
+            console.error("[Shortcuts] delete-game-shortcut error:", e);
+            return { success: false, error: String(e) };
+        }
+    });
+
+    // Edit a stored shortcut's name: recreate shortcuts with new name and update index
+    ipcMain.handle("edit-game-shortcut", async (_event, id: string, newName: string) => {
+        try {
+            const entries = readShortcutsIndex();
+            const idx = entries.findIndex((e: any) => e.id === id);
+            if (idx === -1) return { success: false, error: "Not found" };
+            const entry = entries[idx];
+
+            // Create new shortcuts with the same gameId and location but new name
+            const newResult = await createGameShortcut({ gameName: newName, gameId: entry.gameId, location: entry.location });
+            if (!newResult.success) {
+                return { success: false, error: newResult.error || "Failed to recreate shortcut" };
+            }
+
+
+            // Determine new paths and only delete old files that are NOT part of the new result
+            const newPaths = newResult.paths || (newResult.path ? [newResult.path] : []);
+
+            if (Array.isArray(entry.paths)) {
+                for (const p of entry.paths) {
+                    try {
+                        // Skip deletion if this path is present in the newly created paths
+                        if (newPaths.includes(p)) continue;
+                        if (fs.existsSync(p)) fs.unlinkSync(p);
+                    } catch (e) {
+                        console.warn("[Shortcuts] Failed to remove old shortcut file:", p, e);
+                    }
+                }
+            }
+
+            // Update index entry
+            entry.gameName = newName;
+            entry.paths = newPaths;
+            entry.updatedAt = Date.now();
+            entries[idx] = entry;
+            writeShortcutsIndex(entries);
+
+            return { success: true, paths: entry.paths };
+        } catch (e) {
+            console.error("[Shortcuts] edit-game-shortcut error:", e);
+            return { success: false, error: String(e) };
+        }
     });
 
     ipcMain.handle("get-platform", () => {
@@ -516,6 +665,21 @@ export function registerShortcutHandlers() {
 
     ipcMain.handle("extract-game-id", (_event, url: string) => {
         return extractGameIdFromUrl(url);
+    });
+
+    // Read a file and return a data URL (useful for renderer to display local icons)
+    ipcMain.handle("read-file-data-url", async (_event, filePath: string) => {
+        try {
+            if (!filePath || !fs.existsSync(filePath)) return null;
+            const buf = fs.readFileSync(filePath);
+            const ext = path.extname(filePath).toLowerCase().replace(".", "");
+            // Basic mime-type mapping
+            const mime = ext === "png" ? "image/png" : ext === "jpg" || ext === "jpeg" ? "image/jpeg" : ext === "ico" ? "image/x-icon" : "application/octet-stream";
+            return `data:${mime};base64,${buf.toString("base64")}`;
+        } catch (e) {
+            console.error("[Shortcuts] read-file-data-url error:", e);
+            return null;
+        }
     });
 }
 

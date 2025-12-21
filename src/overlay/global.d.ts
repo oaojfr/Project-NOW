@@ -31,6 +31,12 @@ declare global {
             reloadGFN: () => void;
             // Game shortcut APIs
             createGameShortcut: (info: { gameName: string; gameId: string; location?: ShortcutLocation }) => Promise<ShortcutResult>;
+            // Manage stored shortcuts
+            getGameShortcuts: () => Promise<any[]>;
+            deleteGameShortcut: (id: string) => Promise<{ success: boolean; error?: string }>;
+            editGameShortcut: (id: string, newName: string) => Promise<{ success: boolean; paths?: string[]; error?: string }>;
+            // Read a local file and return a data URL (for images/icons)
+            readFileAsDataUrl: (filePath: string) => Promise<string | null>;
             getPlatform: () => Promise<string>;
             extractGameId: (url: string) => Promise<string | null>;
             // Update APIs

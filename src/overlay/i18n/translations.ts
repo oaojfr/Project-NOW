@@ -87,6 +87,11 @@ export type TranslationKeys = {
     shortcutError: string;
     fillAllFields: string;
     noGameIdFound: string;
+    // Shortcut list UI
+    noShortcuts: string;
+    editShortcut: string;
+    deleteShortcut: string;
+    revealShortcut: string;
     // Loading screen
     launching: string;
     connecting: string;
@@ -183,6 +188,11 @@ const translations: Record<Language, TranslationKeys> = {
         shortcutError: "Error creating shortcut",
         fillAllFields: "Please fill in all fields",
         noGameIdFound: "No game ID found in current URL",
+        // Shortcut list UI
+        noShortcuts: "No shortcuts",
+        editShortcut: "Edit",
+        deleteShortcut: "Delete",
+        revealShortcut: "Reveal on disk",
         // Linux shortcut locations
         shortcutLocation: "Shortcut Location",
         locationDesktop: "Desktop",
@@ -279,6 +289,11 @@ const translations: Record<Language, TranslationKeys> = {
         fillAllFields: "Veuillez remplir tous les champs",
         noGameIdFound: "Aucun ID de jeu trouvé dans l'URL actuelle",
         // Linux shortcut locations
+        // Shortcut list UI
+        noShortcuts: "Aucun raccourci",
+        editShortcut: "Modifier",
+        deleteShortcut: "Supprimer",
+        revealShortcut: "Afficher dans le dossier",
         shortcutLocation: "Emplacement du raccourci",
         locationDesktop: "Bureau",
         locationStartMenu: "Menu Démarrer",
@@ -374,6 +389,11 @@ const translations: Record<Language, TranslationKeys> = {
         fillAllFields: "Por favor, preencha todos os campos",
         noGameIdFound: "Nenhum ID de jogo encontrado na URL atual",
         // Linux shortcut locations
+        // Shortcut list UI
+        noShortcuts: "Nenhum atalho",
+        editShortcut: "Editar",
+        deleteShortcut: "Excluir",
+        revealShortcut: "Mostrar no disco",
         shortcutLocation: "Local do Atalho",
         locationDesktop: "Área de Trabalho",
         locationStartMenu: "Menu Iniciar",
@@ -469,6 +489,11 @@ const translations: Record<Language, TranslationKeys> = {
         fillAllFields: "Por favor, rellena todos los campos",
         noGameIdFound: "No se encontró ID de juego en la URL actual",
         // Linux shortcut locations
+        // Shortcut list UI
+        noShortcuts: "Sin accesos directos",
+        editShortcut: "Editar",
+        deleteShortcut: "Eliminar",
+        revealShortcut: "Mostrar en disco",
         shortcutLocation: "Ubicación del Acceso Directo",
         locationDesktop: "Escritorio",
         locationStartMenu: "Menú Inicio",
@@ -564,6 +589,11 @@ const translations: Record<Language, TranslationKeys> = {
         fillAllFields: "Per favore, compila tutti i campi",
         noGameIdFound: "Nessun ID gioco trovato nell'URL attuale",
         // Linux shortcut locations
+        // Shortcut list UI
+        noShortcuts: "Nessun collegamento",
+        editShortcut: "Modifica",
+        deleteShortcut: "Elimina",
+        revealShortcut: "Mostra nella cartella",
         shortcutLocation: "Posizione del Collegamento",
         locationDesktop: "Desktop",
         locationStartMenu: "Menu Start",
