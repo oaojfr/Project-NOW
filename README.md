@@ -29,9 +29,7 @@ This project was originally created by **[AstralVixen](https://github.com/Astral
 - **Button to reset all settings to their default values.**
 - **Support for smaller screens:** added scrollable areas.
 - **Info tooltips added in the settings section.**
-- **Enhanced UI**: Project NOW aims to improve the user interface of GeForce NOW, providing a more intuitive and enjoyable experience.
-- **Custom Discord Rich Presence**: Show off your gaming status with personalized Discord Rich Presence. Display game details and status updates directly in your Discord profile.
-- **Instant App Switch**: Automatically switch to Project NOW once your gaming rig is ready for action!
+- **Discord Rich Presence**: Show off your gaming status with Discord Rich Presence. Display game details and status updates directly in your Discord profile.
 - **Notifications**: Get notified once your gaming rig is ready for action!
 
 ## 🎮 **Game Shortcuts**
@@ -43,7 +41,7 @@ You can create desktop shortcuts to launch specific games directly from GeForce 
 3. Navigate to a game page on GeForce NOW and click 📋 to extract the game ID, or enter it manually
 4. Enter the game name and click **Create Desktop Shortcut**
 
-The shortcut will be created on your desktop. Double-click it to launch Project NOW directly on that game's page!
+The shortcut will be created on your desktop or your applications menu. Double-click it to launch your game directly !
 
 **Command line usage:**
 ```bash
