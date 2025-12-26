@@ -10,6 +10,7 @@ This project was originally created by **[AstralVixen](https://github.com/Astral
 
 ![Screenshot](src/assets/resources/Screenshot1.png)
 ![Screenshot](src/assets/resources/Screenshot2.png)
+![Screenshot](src/assets/resources/Screenshot3.png)
 
 ## 🚀 **Features**
 
