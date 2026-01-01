@@ -1,4 +1,4 @@
-export type Language = "en" | "fr" | "pt" | "es" | "it";
+export type Language = "en" | "fr" | "pt" | "es" | "it" | "de";
 
 export const languageOptions: { label: string; value: Language }[] = [
     { label: "English", value: "en" },
@@ -6,6 +6,7 @@ export const languageOptions: { label: string; value: Language }[] = [
     { label: "Português", value: "pt" },
     { label: "Español", value: "es" },
     { label: "Italiano", value: "it" },
+    { label: "Deutsch", value: "de" },
 ];
 
 export type TranslationKeys = {
@@ -607,6 +608,106 @@ const translations: Record<Language, TranslationKeys> = {
         almostThere: "Quasi pronto...",
         starting: "Avvio del gioco...",
         notFound: "Pulsante Gioca non trovato. Clicca manualmente.",
+    },
+
+    de: {
+        // Header
+        statusConnected: "Status: Mit GFN verbunden 🎮",
+
+        // Settings Section
+        settings: "Einstellungen",
+        accentColor: "Akzentfarbe",
+        accentColorTooltip: "Legt eine benutzerdefinierte\nAkzentfarbe für GeForce NOW fest.",
+        reloadToApply: "Laden Sie GFN neu, um die Änderungen zu übernehmen.",
+        userAgent: "User Agent",
+        userAgentTooltip: "Ändert den User Agent – verwenden\nSie diese Option, wenn Sie Probleme beim\nStarten oder Spielen von Spielen haben.",
+        restartToApply: "Starten Sie die Anwendung neu, um die Änderungen zu übernehmen.",
+        resolution: "Auflösung",
+        resolutionTooltip: "Wählen Sie die Ziel-Monitorauflösung\naus, die für das Streaming verwendet\nwerden soll.",
+        fps: "FPS",
+        fpsTooltip: "Wählen Sie die gewünschte Frame rate aus.",
+        discordRichPresence: "Discord Rich Presence",
+        discordRichPresenceTooltip: "Aktiviert Discord Rich Presence, wodurch Ihr aktuelles Spiel in Ihrem Discord-Status angezeigt wird.",
+        gameReadyNotification: "Spielbereitschaftsmeldung",
+        gameReadyNotificationTooltip: "Aktiviert eine Benachrichtigung, wenn das\nSpiel bereit ist.",
+        autofocus: "Autofokus",
+        autofocusTooltip: "Aktiviert den Autofokus auf das\nFenster, wenn das Spiel bereit ist\noder wenn Sie aufgrund von Inaktivität\ngekickt werden (die \"Benachrichtigung bei Inaktivität\" muss aktiviert sein).",
+        automute: "Automute",
+        automuteTooltip: "Das Spiel wird automatisch stummgeschaltet, wenn das Fenster nicht im Vordergrund ist.",
+        inactivityNotification: "Benachrichtigung bei Inaktivität",
+        inactivityNotificationTooltip: "Aktiviert eine Benachrichtigung, wenn Sie aufgrund von Inaktivität kurz davor stehen, aus dem Spiel geworfen zu werden.",
+        language: "Sprache",
+        languageTooltip: "Wählen Sie Ihre bevorzugte Sprache aus.",
+
+        // Buttons
+        reloadGFN: "GFN neu laden",
+        defaultSettings: "Standardeinstellungen",
+
+        // Dialogs
+        reloadDialogTitle: "Diese Aktion wird dich aus dem laufenden Spiel werfen.",
+        defaultSettingsDialogTitle: "Standardeinstellungen laden?",
+        dialogOk: "OK",
+        dialogCancel: "Abbrechen",
+        dialogYes: "Ja",
+        dialogNo: "Nein",
+
+        // Shortcuts
+        keyboardShortcuts: "Keyboard Shortcuts",
+        openSidebar: "Sidebar öffnen",
+
+        // Footer
+        checkForUpdates: "Auf neues Update prüfen",
+        checkingForUpdates: "Wird geprüft...",
+        upToDate: "Up to date!",
+        updateAvailableText: "Update",
+        updateError: "Error",
+        available: "verfügbar",
+
+        // Color options
+        colorGfnGreen: "GFN Grün",
+        colorDefault: "Standard",
+        colorBlue: "Blau",
+        colorRed: "Rot",
+        colorYellow: "Gelb",
+        colorPink: "Pink",
+
+        // FPS options
+        ultimateOnly: "Nur Ultimate",
+
+        // Game Shortcuts
+        gameShortcuts: "Spiel-Verknüpfung",
+        gameName: "Name des Spiels",
+        gameNamePlaceholder: "e.g., Cyberpunk 2077",
+        gameId: "Spiel-ID",
+        gameIdPlaceholder: "e.g., dcff9c03-5971-4992-ab7d-0f655ef0bfe2",
+        extractFromUrl: "Auszug aus der aktuellen URL",
+        gameIdHelp: "Navigieren Sie zu einer Spiele-Seite und klicken Sie auf 📋, um die ID zu extrahieren.",
+        createShortcut: "Desktop-Verknüpfung erstellen",
+        creating: "Erstellen...",
+        creatingShortcut: "Verknüpfung erstellen...",
+        shortcutCreated: "Shortcut created successfully!",
+        shortcutError: "Fehler beim Erstellen der Verknüpfung",
+        fillAllFields: "Bitte füllen Sie alle Felder aus.",
+        noGameIdFound: "Keine Spiel-ID in der aktuellen URL gefunden",
+        // Shortcut list UI
+        noShortcuts: "Keine Abkürzungen",
+        editShortcut: "Bearbeiten",
+        deleteShortcut: "Löschen",
+        revealShortcut: "Auf Festplatte anzeigen",
+        // Linux shortcut locations
+        shortcutLocation: "Verknüpfung Speicherort",
+        locationDesktop: "Desktop",
+        locationStartMenu: "Start Menu",
+        locationApplications: "Applications Menu",
+        locationBoth: "Both",
+        // Loading screen
+        launching: "Spiel wird gestartet...",
+        connecting: "Verbindung zu GeForce NOW wird hergestellt...",
+        loadingPage: "Spiele-Seite wird geladen...",
+        waitingButton: "Warten auf Play-Button...",
+        almostThere: "Fast fertig...",
+        starting: "Spiel wird gestartet...",
+        notFound: "Der Play-Button wurde nicht gefunden. Klicken Sie manuell darauf.",
     },
 };
 
